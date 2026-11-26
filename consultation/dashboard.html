@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Consultation Room | AfyaNjia</title>
+  <style>
+    /* =========================================
+       1. DESIGN TOKENS & RESET
+       ========================================= */
+    :root {
+      --navy: #0f2537;
+      --navy-hover: #18364f;
+      --navy-active: #1d4463;
+      --blue: #1d63b8;
+      --blue-hover: #154e94;
+      --teal: #0d9488;
+      --teal-soft: #e6f6f4;
+      --bg-page: #f4f7fa;
+      --surface: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 10px;
+      --shadow-sm: 0 1px 3px rgba(15, 37, 55, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.5;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* =========================================
+       2. APP SHELL (SIDEBAR + MAIN AREA)
+       ========================================= */
+    .app-shell {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 250px;
+      background-color: var(--navy);
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      transition: transform 0.25s ease;
+    }
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 20px 22px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      font-weight: 700;
+      font-size: 1.25rem;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background-color: var(--blue);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.95rem;
+      border-bottom: 3px solid var(--teal);
+    }
+
+    .sidebar-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #94a3b8;
+      padding: 18px 22px 8px;
+      font-weight: 600;
+    }
+
+    .sidebar-nav {
+      list-style: none;
+      padding: 0 12px;
+      flex: 1;
+    }
+
+    .sidebar-nav li {
+      margin-bottom: 4px;
+    }
+
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.92rem;
+      color: #cbd5e1;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    .sidebar-nav a:hover {
+      background-color: var(--navy-hover);
+      color: #ffffff;
+    }
+
+    .sidebar-nav a.active {
+      background-color: var(--navy-active);
+      color: #ffffff;
+      font-weight: 600;
+      border-left: 3px solid var(--teal);
+    }
+
+    .sidebar-footer {
+      padding: 16px 22px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 0.8rem;
+      color: #94a3b8;
+    }
+
+    /* =========================================
+       3. TOPBAR & CONTENT CONTAINER
+       ========================================= */
+    .main-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .topbar {
+      height: 68px;
+      background-color: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .menu-btn {
+      display: none;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 1.1rem;
+      color: var(--navy);
+      cursor: pointer;
+    }
+
+    .page-title {
+      font-size: 1.22rem;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .dept-badge {
+      font-size: 0.8rem;
+      background-color: var(--teal-soft);
+      color: var(--teal);
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    .staff-profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .staff-info {
+      text-align: right;
+    }
+
+    .staff-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--navy);
+    }
+
+    .staff-role {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background-color: var(--blue);
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.88rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .content {
+      padding: 28px;
+      max-width: 1280px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* =========================================
+       4. WORKSPACE LAYOUT & PANELS
+       ========================================= */
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: 0.95fr 1.15fr;
+      gap: 24px;
+      margin-bottom: 26px;
+      align-items: start;
+    }
+
+    .panel {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .panel-header {
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .panel-title {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .panel-subtitle {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    /* Waiting List Cards */
+    .waiting-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .queue-item {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background-color: #fafcfe;
+    }
+
+    .queue-item.selected {
+      border-color: var(--blue);
+      background-color: #f0f6ff;
+    }
+
+    .queue-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+
+    .queue-code {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .queue-meta {
+      font-size: 0.83rem;
+      color: var(--text-muted);
+    }
+
+    .btn-sm {
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      background-color: var(--blue);
+      color: #ffffff;
+      border: none;
+    }
+
+    .btn-sm:hover {
+      background-color: var(--blue-hover);
+    }
+
+    /* =========================================
+       5. CONSULTATION FORM
+       ========================================= */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--navy);
+    }
+
+    input,
+    select,
+    textarea {
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.92rem;
+      font-family: inherit;
+      color: var(--text-main);
+      background-color: #ffffff;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--blue);
+    }
+
+    input[readonly] {
+      background-color: #f1f5f9;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .btn-primary {
+      margin-top: 18px;
+      padding: 11px 20px;
+      border-radius: 8px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      background-color: var(--blue);
+      color: #ffffff;
+      border: none;
+      width: 100%;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--blue-hover);
+    }
+
+    .feedback-banner {
+      display: none;
+      margin-top: 14px;
+      padding: 11px 14px;
+      border-radius: 8px;
+      background-color: var(--teal-soft);
+      color: #0f766e;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+
+    /* =========================================
+       6. CONSULTATION ACTIVITY TABLE
+       ========================================= */
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    th {
+      text-align: left;
+      padding: 11px 14px;
+      background-color: #f8fafc;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    .badge-routine {
+      background-color: #e2e8f0;
+      color: #334155;
+    }
+
+    .badge-urgent {
+      background-color: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge-emergency {
+      background-color: #fee2e2;
+      color: #991b1b;
+    }
+
+    .badge-action {
+      background-color: var(--teal-soft);
+      color: var(--teal);
+    }
+
+    /* =========================================
+       7. RESPONSIVE BREAKPOINTS
+       ========================================= */
+    @media (max-width: 980px) {
+      .workspace-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 200;
+        transform: translateX(-100%);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .menu-btn {
+        display: block;
+      }
+      .staff-info,
+      .dept-badge {
+        display: none;
+      }
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      .content {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-shell">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <a href="../index.html" class="sidebar-brand">
+        <span class="brand-mark">AN</span>
+        <span>AfyaNjia</span>
+      </a>
+
+      <div class="sidebar-label">Departments</div>
+      <ul class="sidebar-nav">
+        <li><a href="../admin/dashboard.html">Administration</a></li>
+        <li><a href="../reception/dashboard.html">Reception</a></li>
+        <li><a href="../triage/dashboard.html">Triage</a></li>
+        <li><a href="dashboard.html" class="active">Consultation</a></li>
+        <li><a href="../laboratory/dashboard.html">Laboratory</a></li>
+        <li><a href="../pharmacy/dashboard.html">Pharmacy</a></li>
+      </ul>
+
+      <div class="sidebar-label">Public Display</div>
+      <ul class="sidebar-nav">
+        <li><a href="../waiting_room.html">Waiting Room Screen</a></li>
+      </ul>
+
+      <div class="sidebar-footer">
+        Local Clinic Network &bull; Demo Mode
+      </div>
+    </aside>
+
+    <!-- MAIN WORKSPACE -->
+    <div class="main-wrapper">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-btn" id="menuBtn" aria-label="Open Navigation">&#9776;</button>
+          <h1 class="page-title">Consultation Room</h1>
+          <span class="dept-badge">Step 3: Clinical Review &amp; Next Action</span>
+        </div>
+
+        <div class="staff-profile">
+          <div class="staff-info">
+            <div class="staff-name">Clinical Officer David Kiprop</div>
+            <div class="staff-role">Consultation Room 1</div>
+          </div>
+          <div class="avatar">DK</div>
+        </div>
+      </header>
+
+      <main class="content">
+        <section class="workspace-grid">
+          <!-- PATIENTS AWAITING CONSULTATION -->
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Awaiting Consultation</h2>
+                <p class="panel-subtitle">Triaged queue numbers ready for clinical review.</p>
+              </div>
+              <span class="badge badge-action" id="consultCountBadge">4 Awaiting</span>
+            </div>
+
+            <div class="waiting-list" id="consultQueueList">
+              <!-- Populated by JavaScript -->
+            </div>
+          </div>
+
+          <!-- CONSULTATION RECORDING FORM -->
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Record Consultation</h2>
+                <p class="panel-subtitle">Document clinical notes and select the required next service.</p>
+              </div>
+            </div>
+
+            <form id="consultationForm">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="consultQueueCode">Queue Number</label>
+                  <input type="text" id="consultQueueCode" value="AN-112" readonly required />
+                </div>
+
+                <div class="form-group">
+                  <label for="consultPriorityDisplay">Triage Priority</label>
+                  <input type="text" id="consultPriorityDisplay" value="Emergency" readonly />
+                </div>
+
+                <div class="form-group full">
+                  <label for="nextActionSelect">Next Action Required</label>
+                  <select id="nextActionSelect" required>
+                    <option value="Complete visit">Complete visit</option>
+                    <option value="Request laboratory test">Request laboratory test</option>
+                    <option value="Send to pharmacy">Send to pharmacy</option>
+                    <option value="Schedule follow-up">Schedule follow-up</option>
+                    <option value="Refer to another facility">Refer to another facility</option>
+                  </select>
+                </div>
+
+                <div class="form-group full">
+                  <label for="clinicalNotes">Clinical Notes &amp; Plan</label>
+                  <textarea id="clinicalNotes" rows="4" placeholder="Enter history findings, clinical observations, and care instructions..." required></textarea>
+                </div>
+              </div>
+
+              <button type="submit" class="btn-primary">Save Consultation &amp; Update Routing</button>
+              <div class="feedback-banner" id="consultFeedback"></div>
+            </form>
+          </div>
+        </section>
+
+        <!-- RECENT CONSULTATION ACTIVITY -->
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">Recent Consultation Activity</h2>
+              <p class="panel-subtitle">Completed clinical reviews and assigned next steps.</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Queue No.</th>
+                  <th>Priority</th>
+                  <th>Clinical Notes</th>
+                  <th>Next Action</th>
+                  <th>Time</th>
+                </tr>
+              </thead>
+              <tbody id="recentConsultBody">
+                <!-- Populated by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+<script>
+    // =========================================
+    // 1. STORAGE KEYS & PROTOTYPE RBAC GUARD
+    // =========================================
+    const SESSION_KEY = "afyanjia_demo_session";
+    const QUEUE_CALL_KEY = "afyanjia_active_queue_call";
+    const DEPT_QUEUE_KEY = "afyanjia_department_queues";
+    const REQUIRED_ROLE = "consultation";
+
+    const session = JSON.parse(
+      localStorage.getItem(SESSION_KEY) || sessionStorage.getItem(SESSION_KEY) || "null"
+    );
+    if (!session || (session.role !== "admin" && session.role !== REQUIRED_ROLE)) {
+      window.location.href = "../index.html?auth_required=" + REQUIRED_ROLE;
+    }
+
+    // Mobile sidebar toggle
+    const menuBtn = document.getElementById("menuBtn");
+    const sidebar = document.getElementById("sidebar");
+    if (menuBtn && sidebar) {
+      menuBtn.addEventListener("click", function () {
+        sidebar.classList.toggle("open");
+      });
+    }
+
+    // =========================================
+    // 2. SHARED CROSS-DEPARTMENT QUEUE HELPERS
+    // =========================================
+    function loadDepartmentQueues() {
+      try {
+        const raw = localStorage.getItem(DEPT_QUEUE_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (err) {
+        return [];
+      }
+    }
+
+    function formatVitalsText(vitals) {
+      if (!vitals) return "Vitals recorded at triage";
+      if (typeof vitals === "string") return vitals;
+      const parts = [];
+      if (vitals.temp) parts.push(`T ${vitals.temp}°C`);
+      if (vitals.pulse) parts.push(`P ${vitals.pulse}`);
+      if (vitals.bp) parts.push(`BP ${vitals.bp}`);
+      return parts.length ? parts.join(", ") : "Vitals recorded at triage";
+    }
+
+    function mapActionToDepartment(nextAction) {
+      const normalized = String(nextAction || "").toLowerCase();
+      if (normalized.includes("lab")) return "Laboratory";
+      if (normalized.includes("pharm")) return "Pharmacy";
+      if (normalized.includes("complete") || normalized.includes("discharge")) return "Completed";
+      return "Pharmacy";
+    }
+
+    function routeTicketFromConsultation(ticketCode, nextAction, priority, notes) {
+      const cleanCode = String(ticketCode).trim().toUpperCase();
+      const targetDept = mapActionToDepartment(nextAction);
+      const timeNow = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+      try {
+        const current = loadDepartmentQueues();
+        const existing = current.find(item => item.ticket.toUpperCase() === cleanCode);
+
+        const updatedRecord = {
+          ...(existing || {}),
+          ticket: cleanCode,
+          currentDepartment: targetDept,
+          priority: priority || (existing && existing.priority) || "Routine",
+          notes: notes || (existing && existing.notes) || nextAction,
+          routedFrom: "Consultation",
+          routedAt: timeNow,
+          status: targetDept === "Completed" ? "Completed" : "Waiting"
+        };
+
+        const withoutDuplicate = current.filter(
+          item => item.ticket.toUpperCase() !== cleanCode
+        );
+        withoutDuplicate.unshift(updatedRecord);
+        localStorage.setItem(DEPT_QUEUE_KEY, JSON.stringify(withoutDuplicate));
+      } catch (err) {
+        // Ignore storage restrictions
+      }
+
+      return targetDept;
+    }
+
+    function announceConsultationCall(ticketCode) {
+      const cleanCode = String(ticketCode).trim().toUpperCase();
+      if (!cleanCode) return;
+
+      try {
+        localStorage.setItem(QUEUE_CALL_KEY, JSON.stringify({
+          ticket: cleanCode,
+          destination: "Consultation",
+          department: "Consultation",
+          timestamp: Date.now()
+        }));
+      } catch (err) {}
+
+      if (feedback) {
+        feedback.textContent = `Calling ${cleanCode} to Consultation on Waiting Room display.`;
+        feedback.style.display = "block";
+      }
+    }
+
+    // =========================================
+    // 3. CONSULTATION QUEUE & LIVE SYNC
+    // =========================================
+    let awaitingConsult = [
+      { queue: "R023", priority: "Emergency", vitals: "T 39.1°C, P 118 bpm, BP 98/64", arrived: "09:12 AM" },
+      { queue: "R024", priority: "Urgent", vitals: "T 36.9°C, P 78 bpm, BP 148/92", arrived: "09:15 AM" }
+    ];
+
+    function syncIncomingConsultTickets() {
+      const incoming = loadDepartmentQueues().filter(
+        item => item.currentDepartment === "Consultation" && item.status !== "Completed"
+      );
+
+      incoming.forEach(item => {
+        const cleanTicket = String(item.ticket).trim().toUpperCase();
+        const vitalsLabel = item.routedFrom === "Laboratory"
+          ? `Lab Return: ${item.notes || "Results ready"}`
+          : formatVitalsText(item.vitals);
+
+        const existingIndex = awaitingConsult.findIndex(p => p.queue.toUpperCase() === cleanTicket);
+        const entry = {
+          queue: cleanTicket,
+          priority: item.priority || "Routine",
+          vitals: vitalsLabel,
+          arrived: item.routedAt || "Just now"
+        };
+
+        if (existingIndex >= 0) {
+          awaitingConsult[existingIndex] = entry;
+        } else {
+          awaitingConsult.unshift(entry);
+        }
+      });
+
+      // Remove tickets that were routed away from Consultation in the shared store
+      const stillInConsult = new Set(
+        loadDepartmentQueues()
+          .filter(item => item.currentDepartment === "Consultation" && item.status !== "Completed")
+          .map(item => item.ticket.toUpperCase())
+      );
+
+      awaitingConsult = awaitingConsult.filter(item => {
+        const isSeededOnly = ["R023", "R024"].includes(item.queue.toUpperCase());
+        const existsInStore = loadDepartmentQueues().some(
+          d => d.ticket.toUpperCase() === item.queue.toUpperCase()
+        );
+        if (existsInStore) {
+          return stillInConsult.has(item.queue.toUpperCase());
+        }
+        return isSeededOnly;
+      });
+    }
+
+    syncIncomingConsultTickets();
+
+    const recentConsults = [
+      {
+        queue: "R021",
+        priority: "Urgent",
+        notes: "Acute febrile illness; ordered Malaria RDT and CBC before prescribing.",
+        nextAction: "Request laboratory test",
+        time: "09:28 AM"
+      },
+      {
+        queue: "R020",
+        priority: "Routine",
+        notes: "Mild upper respiratory symptoms; oral analgesia and hydration advised.",
+        nextAction: "Send to pharmacy",
+        time: "09:16 AM"
+      },
+      {
+        queue: "R018",
+        priority: "Routine",
+        notes: "Wound dressing inspected and healing well; no further medication needed.",
+        nextAction: "Complete visit",
+        time: "09:02 AM"
+      }
+    ];
+
+    const listEl = document.getElementById("consultQueueList");
+    const countBadge = document.getElementById("consultCountBadge");
+    const queueInput = document.getElementById("consultQueueCode");
+    const priorityInput = document.getElementById("consultPriorityDisplay");
+    const recentBody = document.getElementById("recentConsultBody");
+    const form = document.getElementById("consultationForm");
+    const feedback = document.getElementById("consultFeedback");
+
+    if (awaitingConsult.length > 0 && queueInput && priorityInput) {
+      queueInput.value = awaitingConsult[0].queue;
+      priorityInput.value = awaitingConsult[0].priority;
+    }
+
+    function getPriorityBadge(priority) {
+      if (priority === "Emergency") return '<span class="badge badge-emergency">Emergency</span>';
+      if (priority === "Urgent") return '<span class="badge badge-urgent">Urgent</span>';
+      return '<span class="badge badge-routine">Routine</span>';
+    }
+
+    function selectConsultPatient(queueCode, shouldCall = false) {
+      const found = awaitingConsult.find(p => p.queue === queueCode);
+      if (!found) return;
+      if (queueInput) queueInput.value = found.queue;
+      if (priorityInput) priorityInput.value = found.priority;
+      if (feedback) feedback.style.display = "none";
+      if (shouldCall) {
+        announceConsultationCall(found.queue);
+      }
+      renderWaitingConsults();
+    }
+
+    function renderWaitingConsults() {
+      if (countBadge) {
+        countBadge.textContent = awaitingConsult.length + " Awaiting";
+      }
+
+      if (!listEl) return;
+
+      if (awaitingConsult.length === 0) {
+        listEl.innerHTML = '<p style="font-size:0.9rem; color:var(--text-muted);">No patients currently awaiting consultation.</p>';
+        return;
+      }
+
+      const activeCode = queueInput ? queueInput.value : "";
+
+      listEl.innerHTML = awaitingConsult.map(item => `
+        <div class="queue-item ${item.queue === activeCode ? "selected" : ""}">
+          <div>
+            <div class="queue-top">
+              <span class="queue-code">${item.queue}</span>
+              ${getPriorityBadge(item.priority)}
+            </div>
+            <div class="queue-meta">${item.vitals} &bull; Queued ${item.arrived}</div>
+          </div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button type="button" class="btn-sm" onclick="selectConsultPatient('${item.queue}', true)">Call</button>
+            <button type="button" class="btn-sm" onclick="selectConsultPatient('${item.queue}', false)">Open</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderRecentConsults() {
+      if (!recentBody) return;
+      recentBody.innerHTML = recentConsults.map(r => `
+        <tr>
+          <td><strong>${r.queue}</strong></td>
+          <td>${getPriorityBadge(r.priority)}</td>
+          <td>${r.notes}</td>
+          <td><span class="badge badge-action">${r.nextAction}</span></td>
+          <td>${r.time}</td>
+        </tr>
+      `).join("");
+    }
+
+    if (form) {
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const queueCode = queueInput ? queueInput.value.trim().toUpperCase() : "";
+        if (!queueCode) return;
+
+        const priority = priorityInput ? priorityInput.value : "Routine";
+        const nextActionSelect = document.getElementById("nextActionSelect");
+        const nextAction = nextActionSelect ? nextActionSelect.value : "Send to pharmacy";
+        const notesEl = document.getElementById("clinicalNotes");
+        const notes = notesEl ? notesEl.value.trim() : "";
+        const timeNow = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+        // Route ticket to Laboratory, Pharmacy, or mark Completed in shared store
+        const routedDept = routeTicketFromConsultation(queueCode, nextAction, priority, notes);
+
+        recentConsults.unshift({
+          queue: queueCode,
+          priority: priority,
+          notes: notes,
+          nextAction: nextAction,
+          time: timeNow
+        });
+
+        awaitingConsult = awaitingConsult.filter(p => p.queue !== queueCode);
+
+        if (awaitingConsult.length > 0 && queueInput && priorityInput) {
+          queueInput.value = awaitingConsult[0].queue;
+          priorityInput.value = awaitingConsult[0].priority;
+        } else if (queueInput && priorityInput) {
+          queueInput.value = "";
+          priorityInput.value = "";
+        }
+
+        if (notesEl) notesEl.value = "";
+        if (feedback) {
+          feedback.textContent = `Consultation saved for ${queueCode}. Routed to ${routedDept} (${nextAction}).`;
+          feedback.style.display = "block";
+        }
+
+        renderWaitingConsults();
+        renderRecentConsults();
+      });
+    }
+
+    // Listen for live handoffs from Triage or completed lab returns from Laboratory
+    window.addEventListener("storage", function (event) {
+      if (event.key === DEPT_QUEUE_KEY) {
+        syncIncomingConsultTickets();
+        if (awaitingConsult.length > 0 && queueInput && !queueInput.value) {
+          queueInput.value = awaitingConsult[0].queue;
+          if (priorityInput) priorityInput.value = awaitingConsult[0].priority;
+        }
+        renderWaitingConsults();
+      }
+    });
+
+    // Initial render
+    renderWaitingConsults();
+    renderRecentConsults();
+  </script>
+
+ 
+</body>
+</html>

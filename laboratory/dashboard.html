@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Laboratory | AfyaNjia</title>
+  <style>
+    /* =========================================
+       1. DESIGN TOKENS & RESET
+       ========================================= */
+    :root {
+      --navy: #0f2537;
+      --navy-hover: #18364f;
+      --navy-active: #1d4463;
+      --blue: #1d63b8;
+      --blue-hover: #154e94;
+      --teal: #0d9488;
+      --teal-soft: #e6f6f4;
+      --bg-page: #f4f7fa;
+      --surface: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 10px;
+      --shadow-sm: 0 1px 3px rgba(15, 37, 55, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.5;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* =========================================
+       2. APP SHELL (SIDEBAR + MAIN AREA)
+       ========================================= */
+    .app-shell {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 250px;
+      background-color: var(--navy);
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      transition: transform 0.25s ease;
+    }
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 20px 22px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      font-weight: 700;
+      font-size: 1.25rem;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background-color: var(--blue);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.95rem;
+      border-bottom: 3px solid var(--teal);
+    }
+
+    .sidebar-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #94a3b8;
+      padding: 18px 22px 8px;
+      font-weight: 600;
+    }
+
+    .sidebar-nav {
+      list-style: none;
+      padding: 0 12px;
+      flex: 1;
+    }
+
+    .sidebar-nav li {
+      margin-bottom: 4px;
+    }
+
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.92rem;
+      color: #cbd5e1;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    .sidebar-nav a:hover {
+      background-color: var(--navy-hover);
+      color: #ffffff;
+    }
+
+    .sidebar-nav a.active {
+      background-color: var(--navy-active);
+      color: #ffffff;
+      font-weight: 600;
+      border-left: 3px solid var(--teal);
+    }
+
+    .sidebar-footer {
+      padding: 16px 22px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 0.8rem;
+      color: #94a3b8;
+    }
+
+    /* =========================================
+       3. TOPBAR & CONTENT CONTAINER
+       ========================================= */
+    .main-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .topbar {
+      height: 68px;
+      background-color: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .menu-btn {
+      display: none;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 1.1rem;
+      color: var(--navy);
+      cursor: pointer;
+    }
+
+    .page-title {
+      font-size: 1.22rem;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .dept-badge {
+      font-size: 0.8rem;
+      background-color: var(--teal-soft);
+      color: var(--teal);
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    .staff-profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .staff-info {
+      text-align: right;
+    }
+
+    .staff-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--navy);
+    }
+
+    .staff-role {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background-color: var(--teal);
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.88rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .content {
+      padding: 28px;
+      max-width: 1280px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* =========================================
+       4. STATUS CARDS & GRID
+       ========================================= */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stat-label {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .stat-value {
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: 0.85fr 1.35fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .panel {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .panel-header {
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .panel-title {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .panel-subtitle {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    /* =========================================
+       5. FORM & ACTION BUTTONS
+       ========================================= */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--navy);
+    }
+
+    input,
+    select {
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.92rem;
+      font-family: inherit;
+      color: var(--text-main);
+      background-color: #ffffff;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--blue);
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 11px 18px;
+      border-radius: 8px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      background-color: var(--blue);
+      color: #ffffff;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--blue-hover);
+    }
+
+    .btn-action {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      margin-right: 6px;
+    }
+
+    .btn-start {
+      background-color: var(--blue);
+      color: #ffffff;
+    }
+
+    .btn-start:hover {
+      background-color: var(--blue-hover);
+    }
+
+    .btn-complete {
+      background-color: var(--teal);
+      color: #ffffff;
+    }
+
+    .btn-complete:hover {
+      background-color: #0b7a70;
+    }
+
+    /* =========================================
+       6. REQUESTS TABLE & BADGES
+       ========================================= */
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background-color: #ffffff;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background-color: var(--navy);
+      color: #ffffff;
+      border-color: var(--navy);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    th {
+      text-align: left;
+      padding: 11px 14px;
+      background-color: #f8fafc;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    .badge-pending {
+      background-color: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge-processing {
+      background-color: #e0ecfa;
+      color: var(--blue);
+    }
+
+    .badge-completed {
+      background-color: var(--teal-soft);
+      color: var(--teal);
+    }
+
+    /* =========================================
+       7. RESPONSIVE BREAKPOINTS
+       ========================================= */
+    @media (max-width: 980px) {
+      .workspace-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 200;
+        transform: translateX(-100%);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .menu-btn {
+        display: block;
+      }
+      .staff-info,
+      .dept-badge {
+        display: none;
+      }
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      .content {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-shell">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <a href="../index.html" class="sidebar-brand">
+        <span class="brand-mark">AN</span>
+        <span>AfyaNjia</span>
+      </a>
+
+      <div class="sidebar-label">Departments</div>
+     
+       
+      <div class="sidebar-label">Public Display</div>
+      <ul class="sidebar-nav">
+        <li><a href="../waiting_room.html">Waiting Room Screen</a></li>
+      </ul>
+
+      <div class="sidebar-footer">
+        Local Clinic Network &bull; Demo Mode
+      </div>
+    </aside>
+
+    <!-- MAIN WORKSPACE -->
+    <div class="main-wrapper">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-btn" id="menuBtn" aria-label="Open Navigation">&#9776;</button>
+          <h1 class="page-title">Laboratory</h1>
+          <span class="dept-badge">Step 4: Diagnostic Requests &amp; Status</span>
+        </div>
+
+        <div class="staff-profile">
+          <div class="staff-info">
+            <div class="staff-name">Brian Kamau</div>
+            <div class="staff-role">Laboratory Technologist</div>
+          </div>
+          <div class="avatar">BK</div>
+        </div>
+      </header>
+
+      <main class="content">
+        <!-- STATUS COUNTS -->
+        <section class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Pending Requests</div>
+            <div class="stat-value" id="pendingCount">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Being Processed</div>
+            <div class="stat-value" id="processingCount">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Completed Tests</div>
+            <div class="stat-value" id="completedCount">0</div>
+          </div>
+        </section>
+
+        <section class="workspace-grid">
+          <!-- ADD LABORATORY REQUEST FORM -->
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Add Laboratory Request</h2>
+                <p class="panel-subtitle">Log an incoming diagnostic order by queue number.</p>
+              </div>
+            </div>
+
+            <form id="labRequestForm">
+              <div class="form-group">
+                <label for="labQueueInput">Patient Queue Number</label>
+                <input type="text" id="labQueueInput" placeholder="e.g., AN-116" required />
+              </div>
+
+              <div class="form-group">
+                <label for="requestedTestSelect">Requested Test</label>
+                <select id="requestedTestSelect" required>
+                  <option value="Malaria RDT">Malaria RDT</option>
+                  <option value="Urinalysis Dipstick">Urinalysis Dipstick</option>
+                  <option value="Haemoglobin (Hb)">Haemoglobin (Hb)</option>
+                  <option value="Random Blood Glucose">Random Blood Glucose</option>
+                  <option value="Stool Microscopy">Stool Microscopy</option>
+                </select>
+              </div>
+
+              <button type="submit" class="btn-primary">Add to Lab Queue</button>
+            </form>
+          </div>
+
+          <!-- LABORATORY REQUESTS TABLE -->
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <h2 class="panel-title">Laboratory Requests</h2>
+                <p class="panel-subtitle">Start processing pending tests or mark active tests completed.</p>
+              </div>
+
+              <div class="filter-tabs" id="statusFilterTabs">
+                <button type="button" class="tab-btn active" data-filter="All">All</button>
+                <button type="button" class="tab-btn" data-filter="Pending">Pending</button>
+                <button type="button" class="tab-btn" data-filter="Processing">Processing</button>
+                <button type="button" class="tab-btn" data-filter="Completed">Completed</button>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Queue No.</th>
+                    <th>Requested Test</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="labTableBody">
+                  <!-- Populated by JavaScript -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+ <script>
+    // =========================================
+    // 1. STORAGE KEYS & PROTOTYPE RBAC GUARD
+    // =========================================
+    const SESSION_KEY = "afyanjia_demo_session";
+    const QUEUE_CALL_KEY = "afyanjia_active_queue_call";
+    const DEPT_QUEUE_KEY = "afyanjia_department_queues";
+    const REQUIRED_ROLE = "laboratory";
+
+    const session = JSON.parse(
+      localStorage.getItem(SESSION_KEY) || sessionStorage.getItem(SESSION_KEY) || "null"
+    );
+    if (!session || (session.role !== "admin" && session.role !== REQUIRED_ROLE)) {
+      window.location.href = "../index.html?auth_required=" + REQUIRED_ROLE;
+    }
+
+    // Mobile sidebar toggle
+    const menuBtn = document.getElementById("menuBtn");
+    const sidebar = document.getElementById("sidebar");
+    if (menuBtn && sidebar) {
+      menuBtn.addEventListener("click", function () {
+        sidebar.classList.toggle("open");
+      });
+    }
+
+    // =========================================
+    // 2. SHARED CROSS-DEPARTMENT QUEUE HELPERS
+    // =========================================
+    function loadDepartmentQueues() {
+      try {
+        const raw = localStorage.getItem(DEPT_QUEUE_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (err) {
+        return [];
+      }
+    }
+
+    function routeTicketFromLab(ticketCode, destination, labSummary) {
+      const cleanCode = String(ticketCode).trim().toUpperCase();
+      if (!cleanCode) return;
+
+      try {
+        const current = loadDepartmentQueues();
+        const existing = current.find(item => item.ticket.toUpperCase() === cleanCode);
+        const timeNow = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+        const updatedRecord = {
+          ...(existing || {}),
+          ticket: cleanCode,
+          currentDepartment: destination,
+          priority: (existing && existing.priority) || "Routine",
+          notes: labSummary || (existing && existing.notes) || "Lab test completed; ready for review.",
+          routedFrom: "Laboratory",
+          routedAt: timeNow,
+          status: "Waiting"
+        };
+
+        const withoutDuplicate = current.filter(
+          item => item.ticket.toUpperCase() !== cleanCode
+        );
+        withoutDuplicate.unshift(updatedRecord);
+        localStorage.setItem(DEPT_QUEUE_KEY, JSON.stringify(withoutDuplicate));
+      } catch (err) {
+        // Ignore storage restrictions
+      }
+    }
+
+    function announceLabCall(ticketCode) {
+      const cleanCode = String(ticketCode).trim().toUpperCase();
+      if (!cleanCode) return;
+
+      try {
+        localStorage.setItem(QUEUE_CALL_KEY, JSON.stringify({
+          ticket: cleanCode,
+          destination: "Laboratory",
+          department: "Laboratory",
+          timestamp: Date.now()
+        }));
+      } catch (err) {}
+    }
+
+    // =========================================
+    // 3. LABORATORY REQUESTS & LIVE SYNC
+    // =========================================
+    let labRequests = [
+      { id: 1, queue: "R022", test: "Malaria RDT (from Triage)", status: "Pending" },
+      { id: 2, queue: "R021", test: "Urinalysis Dipstick", status: "Pending" },
+      { id: 3, queue: "R019", test: "Haemoglobin (Hb)", status: "Processing" },
+      { id: 4, queue: "R016", test: "Random Blood Glucose", status: "Completed" }
+    ];
+
+    let activeFilter = "All";
+    let nextId = 5;
+
+    const labTableBody = document.getElementById("labTableBody");
+    const labRequestForm = document.getElementById("labRequestForm");
+    const filterButtons = document.querySelectorAll(".tab-btn");
+
+    function syncIncomingLabTickets() {
+      const incoming = loadDepartmentQueues().filter(
+        item => item.currentDepartment === "Laboratory" && item.status !== "Completed"
+      );
+
+      incoming.forEach(item => {
+        const cleanTicket = String(item.ticket).trim().toUpperCase();
+        const existing = labRequests.find(r => r.queue.toUpperCase() === cleanTicket);
+
+        if (!existing) {
+          labRequests.unshift({
+            id: nextId++,
+            queue: cleanTicket,
+            test: item.requestedTest || item.notes || "Baseline Lab Panel",
+            status: "Pending"
+          });
+        } else if (existing.status === "Completed") {
+          existing.status = "Pending";
+          existing.test = item.requestedTest || item.notes || existing.test;
+        }
+      });
+    }
+
+    syncIncomingLabTickets();
+
+    function getStatusBadge(status) {
+      if (status === "Pending") return '<span class="badge badge-pending">Pending</span>';
+      if (status === "Processing") return '<span class="badge badge-processing">Processing</span>';
+      return '<span class="badge badge-completed">Completed</span>';
+    }
+
+    function updateCounts() {
+      const pendingEl = document.getElementById("pendingCount");
+      const processingEl = document.getElementById("processingCount");
+      const completedEl = document.getElementById("completedCount");
+
+      if (pendingEl) {
+        pendingEl.textContent = labRequests.filter(r => r.status === "Pending").length;
+      }
+      if (processingEl) {
+        processingEl.textContent = labRequests.filter(r => r.status === "Processing").length;
+      }
+      if (completedEl) {
+        completedEl.textContent = labRequests.filter(r => r.status === "Completed").length;
+      }
+    }
+
+    function renderLabTable() {
+      updateCounts();
+
+      const visibleRows = activeFilter === "All"
+        ? labRequests
+        : labRequests.filter(r => r.status === activeFilter);
+
+      if (visibleRows.length === 0) {
+        labTableBody.innerHTML = '<tr><td colspan="4" style="color:var(--text-muted);">No laboratory requests in this view.</td></tr>';
+        return;
+      }
+
+      labTableBody.innerHTML = visibleRows.map(req => {
+        let actionButtons = "";
+        if (req.status === "Pending") {
+          actionButtons = `
+            <button type="button" class="btn-action btn-start" onclick="announceLabCall('${req.queue}')">Call</button>
+            <button type="button" class="btn-action btn-start" onclick="setTestStatus(${req.id}, 'Processing')">Start Test</button>
+          `;
+        } else if (req.status === "Processing") {
+          actionButtons = `
+            <button type="button" class="btn-action btn-start" onclick="announceLabCall('${req.queue}')">Call</button>
+            <button type="button" class="btn-action btn-complete" onclick="setTestStatus(${req.id}, 'Completed')">Complete &rarr; Consultation</button>
+          `;
+        } else {
+          actionButtons = '<span style="font-size:0.82rem; color:var(--text-muted);">Returned to Consultation</span>';
+        }
+
+        return `
+          <tr>
+            <td><strong>${req.queue}</strong></td>
+            <td>${req.test}</td>
+            <td>${getStatusBadge(req.status)}</td>
+            <td style="display:flex; gap:6px; flex-wrap:wrap;">${actionButtons}</td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function setTestStatus(id, newStatus) {
+      const target = labRequests.find(r => r.id === id);
+      if (!target) return;
+
+      target.status = newStatus;
+
+      if (newStatus === "Processing") {
+        announceLabCall(target.queue);
+      } else if (newStatus === "Completed") {
+        // Send completed lab ticket back to Consultation for doctor review
+        routeTicketFromLab(
+          target.queue,
+          "Consultation",
+          `Lab Completed (${target.test}) — Ready for clinician review.`
+        );
+      }
+
+      renderLabTable();
+    }
+
+    labRequestForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+      const queueCode = document.getElementById("labQueueInput").value.trim().toUpperCase();
+      const testName = document.getElementById("requestedTestSelect").value;
+      if (!queueCode) return;
+
+      labRequests.unshift({
+        id: nextId++,
+        queue: queueCode,
+        test: testName,
+        status: "Pending"
+      });
+
+      routeTicketFromLab(queueCode, "Laboratory", `Requested test: ${testName}`);
+      document.getElementById("labQueueInput").value = "";
+      renderLabTable();
+    });
+
+    filterButtons.forEach(btn => {
+      btn.addEventListener("click", function () {
+        filterButtons.forEach(b => b.classList.remove("active"));
+        this.classList.add("active");
+        activeFilter = this.getAttribute("data-filter");
+        renderLabTable();
+      });
+    });
+
+    // Listen for live handoffs sent to Laboratory from Triage or Consultation
+    window.addEventListener("storage", function (event) {
+      if (event.key === DEPT_QUEUE_KEY) {
+        syncIncomingLabTickets();
+        renderLabTable();
+      }
+    });
+
+    // Initial render
+    renderLabTable();
+  </script>
+</body>
+</html>

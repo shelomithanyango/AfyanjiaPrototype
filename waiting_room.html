@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Waiting-Room Display | AfyaNjia</title>
+  <style>
+    /* =========================================
+       1. DESIGN TOKENS & RESET
+       ========================================= */
+    :root {
+      --navy: #0f2537;
+      --navy-card: #16334b;
+      --blue: #1d63b8;
+      --blue-hover: #154e94;
+      --teal: #0d9488;
+      --teal-bright: #14b8a6;
+      --teal-soft: #e6f6f4;
+      --bg-page: #eef3f8;
+      --surface: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --border: #cbd5e1;
+      --radius: 14px;
+      --shadow-md: 0 8px 24px rgba(15, 37, 55, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* =========================================
+       2. PUBLIC DISPLAY HEADER & LANGUAGE BAR
+       ========================================= */
+    .display-header {
+      background-color: var(--navy);
+      color: #ffffff;
+      padding: 18px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      border-bottom: 4px solid var(--teal);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-mark {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background-color: var(--blue);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.15rem;
+      border-bottom: 3px solid var(--teal-bright);
+    }
+
+    .facility-name {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    .facility-sub {
+      font-size: 0.88rem;
+      color: #cbd5e1;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .lang-selector-box {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      background-color: rgba(255, 255, 255, 0.08);
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+    }
+
+    .lang-selector-box label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #5eead4;
+      font-weight: 700;
+    }
+
+    .lang-selector-box select {
+      background-color: #ffffff;
+      color: var(--navy);
+      border: none;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .clock-box {
+      text-align: right;
+    }
+
+    .live-time {
+      font-size: 1.55rem;
+      font-weight: 700;
+      color: #ffffff;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .live-date {
+      font-size: 0.88rem;
+      color: #5eead4;
+      font-weight: 500;
+    }
+
+    /* =========================================
+       3. MAIN DISPLAY GRID
+       ========================================= */
+    .display-main {
+      flex: 1;
+      width: 100%;
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 28px 32px;
+      display: grid;
+      grid-template-columns: 1.3fr 0.9fr;
+      gap: 28px;
+      align-items: stretch;
+    }
+
+    /* Now Serving Hero Card */
+    .now-serving-card {
+      background-color: var(--surface);
+      border: 2px solid var(--teal);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+      padding: 36px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-align: center;
+    }
+
+    .serving-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background-color: var(--teal-soft);
+      color: var(--teal);
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 8px 18px;
+      border-radius: 999px;
+      margin: 0 auto 16px;
+    }
+
+    .serving-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: var(--teal);
+    }
+
+    .serving-label {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .serving-number {
+      font-size: 5.2rem;
+      font-weight: 800;
+      color: var(--navy);
+      line-height: 1.05;
+      margin: 12px 0 18px;
+      letter-spacing: 2px;
+    }
+
+    .destination-banner {
+      background-color: var(--navy);
+      color: #ffffff;
+      border-radius: 12px;
+      padding: 22px 24px;
+    }
+
+    .destination-prompt {
+      font-size: 0.95rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 6px;
+    }
+
+    .destination-room {
+      font-size: 1.85rem;
+      font-weight: 700;
+      color: #5eead4;
+    }
+
+    .destination-sub-en {
+      font-size: 0.92rem;
+      color: #cbd5e1;
+      margin-top: 6px;
+    }
+
+    .audio-controls {
+      margin-top: 24px;
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 13px 22px;
+      border-radius: 10px;
+      font-size: 0.98rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: background-color 0.2s;
+    }
+
+    .btn-teal {
+      background-color: var(--teal);
+      color: #ffffff;
+    }
+
+    .btn-teal:hover {
+      background-color: #0b7a70;
+    }
+
+    .btn-blue {
+      background-color: var(--blue);
+      color: #ffffff;
+    }
+
+    .btn-blue:hover {
+      background-color: var(--blue-hover);
+    }
+
+    .speech-status {
+      margin-top: 12px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      min-height: 22px;
+    }
+
+    /* Recently Called & Department Board */
+    .side-column {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .board-card {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+      padding: 26px;
+      flex: 1;
+    }
+
+    .board-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--navy);
+      padding-bottom: 14px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .called-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .called-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 18px;
+      border-radius: 10px;
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+    }
+
+    .called-ticket {
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: var(--navy);
+    }
+
+    .called-dest {
+      text-align: right;
+    }
+
+    .called-dept {
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: var(--blue);
+    }
+
+    .called-time {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    /* Guidance Strip */
+    .guidance-card {
+      background-color: var(--navy);
+      color: #ffffff;
+      border-radius: var(--radius);
+      padding: 22px 24px;
+    }
+
+    .guidance-card h3 {
+      font-size: 1rem;
+      color: #5eead4;
+      margin-bottom: 8px;
+    }
+
+    .guidance-card p {
+      font-size: 0.92rem;
+      color: #e2e8f0;
+      line-height: 1.55;
+    }
+
+    /* =========================================
+       4. FOOTER BAR
+       ========================================= */
+    .display-footer {
+      background-color: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 14px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 18px;
+    }
+
+    .footer-links a {
+      color: var(--blue);
+      font-weight: 600;
+    }
+
+    .footer-links a:hover {
+      text-decoration: underline;
+    }
+
+    /* =========================================
+       5. RESPONSIVE BREAKPOINTS
+       ========================================= */
+    @media (max-width: 960px) {
+      .display-main {
+        grid-template-columns: 1fr;
+        padding: 20px;
+      }
+      .serving-number {
+        font-size: 4.2rem;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .display-header {
+        padding: 16px 20px;
+      }
+      .clock-box {
+        text-align: left;
+      }
+      .serving-number {
+        font-size: 3.4rem;
+      }
+      .destination-room {
+        font-size: 1.35rem;
+      }
+      .called-ticket {
+        font-size: 1.35rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PUBLIC HEADER -->
+  <header class="display-header">
+    <a href="index.html" class="brand-group">
+      <div class="brand-mark">AN</div>
+      <div>
+        <div class="facility-name">AfyaNjia Patient Queue Display</div>
+        <div class="facility-sub">Gem Sub-County Public Dispensary &bull; Waiting Area</div>
+      </div>
+    </a>
+
+    <div class="header-right">
+      <div class="lang-selector-box">
+        <label for="languageSelect">Display &amp; Voice Language</label>
+        <select id="languageSelect" aria-label="Select Display and Announcement Language">
+          <option value="en">English</option>
+          <option value="sw">Kiswahili</option>
+          <option value="luo">Dholuo</option>
+          <option value="luy">Luhya</option>
+          <option value="ki">Kikuyu</option>
+          <option value="bilingual_en_sw">English + Kiswahili</option>
+        </select>
+      </div>
+
+      <div class="clock-box">
+        <div class="live-time" id="liveTime">--:--:--</div>
+        <div class="live-date" id="liveDate">Loading date...</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN SCREEN -->
+  <main class="display-main">
+    <!-- CURRENTLY CALLED QUEUE NUMBER -->
+    <section class="now-serving-card" aria-live="polite">
+      <div>
+        <div class="serving-pill">
+          <span class="serving-dot"></span>
+          <span id="uiNowCalling">Now Calling</span>
+        </div>
+        <div class="serving-label" id="uiQueueLabel">Queue Number</div>
+        <div class="serving-number" id="currentQueueNumber">R025</div>
+      </div>
+
+      <div class="destination-banner">
+        <div class="destination-prompt" id="uiProceedPrompt">Please Proceed To</div>
+        <div class="destination-room" id="currentDestination">Consultation</div>
+        <div class="destination-sub-en" id="currentDestinationEnSub"></div>
+      </div>
+
+      <div>
+        <div class="audio-controls">
+          <button type="button" class="btn btn-teal" id="announceAudioBtn">
+            &#128266; Announce Queue Number
+          </button>
+          <button type="button" class="btn btn-blue" id="nextQueueBtn">
+            Demonstrate Next Call &rarr;
+          </button>
+        </div>
+        <div class="speech-status" id="speechStatus">
+          Click "Announce Queue Number" to hear spoken guidance for the waiting area.
+        </div>
+      </div>
+    </section>
+
+    <!-- RECENTLY CALLED NUMBERS & PATIENT GUIDANCE -->
+    <aside class="side-column">
+      <div class="board-card">
+        <div class="board-title">
+          <span id="uiRecentTitle">Recently Called Numbers</span>
+          <span style="font-size: 0.82rem; color: var(--teal); font-weight: 600;">Active Calls</span>
+        </div>
+
+        <div class="called-list" id="recentlyCalledList">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+
+      <div class="guidance-card">
+        <h3 id="uiGuidanceTitle">Waiting Area Guidance</h3>
+        <p id="uiGuidanceBody">
+          Please hold your visit queue number slip and watch this screen. When your number appears, proceed directly to the indicated service room. For privacy, patient names are never shown on this display.
+        </p>
+      </div>
+    </aside>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="display-footer">
+    <div>AfyaNjia Public Waiting-Room Display &bull; Privacy-Protected Queue Screen</div>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="admin/dashboard.html">Staff Workspace</a>
+    </div>
+  </footer>
+
+  <script>
+    // =========================================
+    // 1. SESSION GUARD & CLOCK
+    // =========================================
+    const SESSION_KEY = "afyanjia_demo_session";
+    const QUEUE_CALL_KEY = "afyanjia_active_queue_call";
+    const LANG_PREF_KEY = "afyanjia_display_language";
+
+    const session = JSON.parse(
+      localStorage.getItem(SESSION_KEY) || sessionStorage.getItem(SESSION_KEY) || "null"
+    );
+    if (!session || !session.role) {
+      window.location.href = "index.html?auth_required=waiting_room";
+    }
+
+    function updateClock() {
+      const now = new Date();
+      document.getElementById("liveTime").textContent = now.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+      });
+      document.getElementById("liveDate").textContent = now.toLocaleDateString([], {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+      });
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // =========================================
+    // 2. HARDCODED LUHYA & DHOLUO DICTIONARIES
+    // =========================================
+    const UI_STRINGS = {
+      en: {
+        nowCalling: "Now Calling",
+        queueLabel: "Queue Number",
+        proceedPrompt: "Please Proceed To",
+        recentTitle: "Recently Called Numbers",
+        guidanceTitle: "Waiting Area Guidance",
+        guidanceBody: "Please hold your visit queue number slip and watch this screen. When your number appears, proceed directly to the indicated service room. For privacy, patient names are never shown on this display."
+      },
+      sw: {
+        nowCalling: "Inaitwa Sasa",
+        queueLabel: "Nambari ya Tiketi",
+        proceedPrompt: "Tafadhali Elekea",
+        recentTitle: "Nambari Zilizopita Hivi Punde",
+        guidanceTitle: "Mwongozo wa Eneo la Kusubiri",
+        guidanceBody: "Tafadhali shikilia nambari yako ya foleni na utazame skrini hii. Nambari yako ikionekana, elekea moja kwa moja kwenye chumba kilichoonyeshwa. Majina ya wagonjwa hayaonyeshwi kwa faragha."
+      },
+      luo: {
+        nowCalling: "Iluongo Sani",
+        queueLabel: "Namba mar Tikiti",
+        proceedPrompt: "Yie Idhi E",
+        recentTitle: "Namba Mosechako Luong",
+        guidanceTitle: "Wach ne Joma Rito",
+        guidanceBody: "Yie imak namba mari mar tikiti kendo irang skrin ni. Ka nambani owuok, dhi tir e ot ma onyisi. Ok wanyis nying ji mondo warit maling'ling'."
+      },
+      luy: {
+        nowCalling: "Ikhuulanga Bulano",
+        queueLabel: "Inamba ye Tiketi",
+        proceedPrompt: "Khulomaloma Okhuya Khu",
+        recentTitle: "Tsinamba Tsilaangwa Bwangu",
+        guidanceTitle: "Amalako ke Abalindanga",
+        guidanceBody: "Tiira inamba yao ye tiketi nende olole khu skrini yino. Inamba yao niyabonekhana, tsia butswa mu chumba chibonekhane. Amasina ke abalwale sikabonekhanga ta."
+      },
+      bilingual_en_sw: {
+        nowCalling: "Now Calling / Inaitwa Sasa",
+        queueLabel: "Queue Number / Nambari ya Tiketi",
+        proceedPrompt: "Please Proceed To / Tafadhali Elekea",
+        recentTitle: "Recently Called / Zilizopita",
+        guidanceTitle: "Waiting Area Guidance / Mwongozo",
+        guidanceBody: "Hold your ticket slip and proceed to the displayed department when called. / Shikilia tiketi yako na uelekee idara iliyoonyeshwa nambari yako ikiitwa."
+      }
+    };
+
+    const DEPT_TRANSLATIONS = {
+      Triage: {
+        en: "Triage",
+        sw: "Idara ya Triage (Uchunguzi wa Awali)",
+        luo: "Triage (Nonro Mokwongo)",
+        luy: "Triage (Okhupima Okhwokhura)"
+      },
+      Consultation: {
+        en: "Consultation",
+        sw: "Chumba cha Ushauri wa Daktari",
+        luo: "Consultation (Wuoyo gi Laktar)",
+        luy: "Consultation (Okhubolana ne Omukhalabani)"
+      },
+      Laboratory: {
+        en: "Laboratory",
+        sw: "Maabara",
+        luo: "Laboratory (Kar Pimo)",
+        luy: "Laboratory (Ingo ye Okhupima)"
+      },
+      Pharmacy: {
+        en: "Pharmacy",
+        sw: "Famasi ya Dawa",
+        luo: "Pharmacy (Kar Yath)",
+        luy: "Pharmacy (Ingo ye Emikoye)"
+      }
+    };
+
+    // Phonetic syllable spelling tuned for clear vowel separation in TTS fallback
+    const PHONETIC_DIGITS = {
+      en: {
+        "0": "zero", "1": "one", "2": "two", "3": "three", "4": "four",
+        "5": "five", "6": "six", "7": "seven", "8": "eight", "9": "nine"
+      },
+      sw: {
+        "0": "si-fu-ri", "1": "mo-ja", "2": "m-bi-li", "3": "ta-tu", "4": "n-ne",
+        "5": "ta-no", "6": "si-ta", "7": "sa-ba", "8": "na-ne", "9": "ti-sa"
+      },
+      luo: {
+        "0": "non-ro",
+        "1": "ah-chiel",
+        "2": "ah-ree-yo",
+        "3": "ah-dek",
+        "4": "ahng-wen",
+        "5": "ah-beech",
+        "6": "ah-oo-chiel",
+        "7": "ah-bee-ree-yo",
+        "8": "ah-bo-ro",
+        "9": "oh-chee-ko"
+      },
+      luy: {
+        "0": "ze-ro",
+        "1": "n-da-la",
+        "2": "tsee-bee-ri",
+        "3": "ta-ta-ru",
+        "4": "tsee-ne",
+        "5": "tsee-ra-no",
+        "6": "tsee-sa-ba",
+        "7": "tseen-da",
+        "8": "tsee-na-ne",
+        "9": "tsee-en-da"
+      }
+    };
+
+    const PHONETIC_DEPARTMENTS = {
+      Triage: {
+        en: "Triage",
+        sw: "Idara ya Triage",
+        luo: "Triage, kar non-ro mo-kwon-go",
+        luy: "Triage, o-khoo-pee-ma o-khwo-khoo-ra"
+      },
+      Consultation: {
+        en: "Consultation",
+        sw: "Chumba cha Daktari",
+        luo: "Consultation, kar woo-yo gi lak-tar",
+        luy: "Consultation, o-khoo-bo-la-na ne o-moo-kha-la-ba-ni"
+      },
+      Laboratory: {
+        en: "Laboratory",
+        sw: "Maabara",
+        luo: "Laboratory, kar pee-mo",
+        luy: "Laboratory, een-go ye o-khoo-pee-ma"
+      },
+      Pharmacy: {
+        en: "Pharmacy",
+        sw: "Famasi ya Dawa",
+        luo: "Pharmacy, kar ka-wo yath",
+        luy: "Pharmacy, een-go ye e-mee-ko-ye"
+      }
+    };
+
+    // =========================================
+    // 3. STATE & LANGUAGE HELPERS
+    // =========================================
+    const NATIVE_AUDIO_LANGS = ["luy", "luo"];
+    const languageSelect = document.getElementById("languageSelect");
+    let currentLang = localStorage.getItem(LANG_PREF_KEY) || "en";
+    if (!UI_STRINGS[currentLang]) currentLang = "en";
+    languageSelect.value = currentLang;
+
+    const callSequence = [
+      { queue: "R025", destinationKey: "Consultation" },
+      { queue: "R026", destinationKey: "Triage" },
+      { queue: "R020", destinationKey: "Pharmacy" },
+      { queue: "R022", destinationKey: "Laboratory" },
+      { queue: "R024", destinationKey: "Consultation" }
+    ];
+
+    let currentIndex = 0;
+    let activeCall = { queue: "R025", destinationKey: "Consultation" };
+    let activeAudioClip = null;
+
+    let recentlyCalled = [
+      { queue: "R024", destinationKey: "Consultation", time: "2 mins ago" },
+      { queue: "R020", destinationKey: "Pharmacy", time: "5 mins ago" },
+      { queue: "R022", destinationKey: "Laboratory", time: "8 mins ago" },
+      { queue: "R021", destinationKey: "Triage", time: "11 mins ago" }
+    ];
+
+    const currentNumberEl = document.getElementById("currentQueueNumber");
+    const currentDestEl = document.getElementById("currentDestination");
+    const currentDestEnSubEl = document.getElementById("currentDestinationEnSub");
+    const recentListEl = document.getElementById("recentlyCalledList");
+    const speechStatusEl = document.getElementById("speechStatus");
+
+    function getLocalizedDestination(destKey, lang) {
+      const entry = DEPT_TRANSLATIONS[destKey];
+      if (!entry) return destKey;
+      if (lang === "bilingual_en_sw") {
+        return `${entry.en} / ${entry.sw}`;
+      }
+      return entry[lang] || entry.en;
+    }
+
+    function spellCodeForSpeech(ticketCode, lang) {
+      const map = PHONETIC_DIGITS[lang] || PHONETIC_DIGITS.en;
+      return ticketCode
+        .replace("-", "")
+        .split("")
+        .map(ch => {
+          const upper = ch.toUpperCase();
+          if (upper === "R") return lang === "en" ? "R" : "ah-r";
+          return map[upper] || upper;
+        })
+        .join(", ");
+    }
+
+    function buildSpokenSentence(ticketCode, destKey, lang) {
+      const dept = PHONETIC_DEPARTMENTS[destKey] || {
+        en: destKey,
+        sw: destKey,
+        luo: destKey,
+        luy: destKey
+      };
+      const codeSpoken = spellCodeForSpeech(ticketCode, lang);
+
+      switch (lang) {
+        case "sw":
+          return `Nam-ba-ri ya tee-ke-ti, ${codeSpoken}. Ta-fa-dha-li e-le-ke-a ${dept.sw}.`;
+        case "luo":
+          return `Tee-kee-tee nam-ba, ${codeSpoken}. Yee-eh ee-dhee eh ${dept.luo}.`;
+        case "luy":
+          return `Tee-keh-tee nam-ba, ${codeSpoken}. Khoo-lo-ma-lo-ma o-khoo-ya khoo ${dept.luy}.`;
+        case "bilingual_en_sw": {
+          const enCode = spellCodeForSpeech(ticketCode, "en");
+          const swCode = spellCodeForSpeech(ticketCode, "sw");
+          return `Ticket ${enCode}, please proceed to ${dept.en}. Nam-ba-ri ya tee-ke-ti, ${swCode}, ta-fa-dha-li e-le-ke-a ${dept.sw}.`;
+        }
+        case "en":
+        default:
+          return `Ticket ${codeSpoken}, please proceed to ${dept.en}.`;
+      }
+    }
+
+    function buildAudioClipQueue(ticketCode, destKey, lang) {
+      const folder = `audio/${lang}`;
+      const chars = ticketCode.replace(/[^A-Z0-9]/gi, "").toUpperCase().split("");
+      return [
+        `${folder}/prefix.mp3`,
+        ...chars.map(ch => `${folder}/${ch}.mp3`),
+        `${folder}/${destKey}.mp3`
+      ];
+    }
+
+    function playClipSequence(clipUrls, onDone, onFallback) {
+      if (!clipUrls.length) {
+        if (onDone) onDone();
+        return;
+      }
+
+      const [nextClip, ...restClips] = clipUrls;
+      const player = new Audio(nextClip);
+      activeAudioClip = player;
+
+      player.onended = function () {
+        playClipSequence(restClips, onDone, onFallback);
+      };
+
+      player.onerror = function () {
+        if (onFallback) onFallback();
+      };
+
+      player.play().catch(function () {
+        if (onFallback) onFallback();
+      });
+    }
+
+    function pickBestVoice(lang) {
+      if (!("speechSynthesis" in window)) return null;
+      const voices = window.speechSynthesis.getVoices() || [];
+      if (!voices.length) return null;
+
+      if (lang === "sw" || NATIVE_AUDIO_LANGS.includes(lang)) {
+        return (
+          voices.find(v => v.lang.toLowerCase().startsWith("sw")) ||
+          voices.find(v => v.lang.toLowerCase() === "en-ke") ||
+          voices.find(v => v.lang.toLowerCase().startsWith("en")) ||
+          voices[0]
+        );
+      }
+
+      return (
+        voices.find(v => v.lang.toLowerCase() === "en-ke") ||
+        voices.find(v => v.lang.toLowerCase().startsWith("en")) ||
+        voices[0]
+      );
+    }
+
+    function speakWithBrowserTTS(ticketCode, destKey, lang) {
+      if (!("speechSynthesis" in window)) {
+        speechStatusEl.textContent = "Audio speech is not supported in this browser.";
+        return;
+      }
+
+      window.speechSynthesis.cancel();
+
+      const spokenText = buildSpokenSentence(ticketCode, destKey, lang);
+      const utterance = new SpeechSynthesisUtterance(spokenText);
+      const chosenVoice = pickBestVoice(lang);
+
+      if (chosenVoice) {
+        utterance.voice = chosenVoice;
+        utterance.lang = chosenVoice.lang;
+      } else {
+        utterance.lang = lang === "en" ? "en-KE" : "sw-KE";
+      }
+
+      utterance.rate = 0.86;
+      utterance.pitch = 1.0;
+
+      utterance.onstart = function () {
+        speechStatusEl.textContent = `Announcing (${lang.toUpperCase()}): "${spokenText}"`;
+      };
+
+      utterance.onend = function () {
+        speechStatusEl.textContent = "Announcement complete.";
+      };
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function applyLocalizedDisplay() {
+      const strings = UI_STRINGS[currentLang] || UI_STRINGS.en;
+
+      document.getElementById("uiNowCalling").textContent = strings.nowCalling;
+      document.getElementById("uiQueueLabel").textContent = strings.queueLabel;
+      document.getElementById("uiProceedPrompt").textContent = strings.proceedPrompt;
+      document.getElementById("uiRecentTitle").textContent = strings.recentTitle;
+      document.getElementById("uiGuidanceTitle").textContent = strings.guidanceTitle;
+      document.getElementById("uiGuidanceBody").textContent = strings.guidanceBody;
+
+      currentNumberEl.textContent = activeCall.queue;
+      currentDestEl.textContent = getLocalizedDestination(activeCall.destinationKey, currentLang);
+
+      if (NATIVE_AUDIO_LANGS.includes(currentLang)) {
+        currentDestEnSubEl.textContent = `Department: ${activeCall.destinationKey}`;
+      } else {
+        currentDestEnSubEl.textContent = "";
+      }
+
+      renderRecentlyCalled();
+    }
+
+    function renderRecentlyCalled() {
+      recentListEl.innerHTML = recentlyCalled.slice(0, 4).map(item => `
+        <div class="called-row">
+          <div class="called-ticket">${item.queue}</div>
+          <div class="called-dest">
+            <div class="called-dept">${getLocalizedDestination(item.destinationKey, currentLang)}</div>
+            <div class="called-time">Called ${item.time}</div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function speakCurrentQueue() {
+      if (activeAudioClip) {
+        activeAudioClip.pause();
+        activeAudioClip = null;
+      }
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+
+      if (NATIVE_AUDIO_LANGS.includes(currentLang)) {
+        const clipUrls = buildAudioClipQueue(activeCall.queue, activeCall.destinationKey, currentLang);
+        speechStatusEl.textContent = `Checking native ${currentLang.toUpperCase()} audio clips for ${activeCall.queue}...`;
+
+        playClipSequence(
+          clipUrls,
+          function () {
+            speechStatusEl.textContent = `Native ${currentLang.toUpperCase()} announcement complete.`;
+          },
+          function () {
+            // Automatic fallback to syllable-tuned TTS until all MP3 clips are in audio/<lang>/
+            speakWithBrowserTTS(activeCall.queue, activeCall.destinationKey, currentLang);
+          }
+        );
+        return;
+      }
+
+      speakWithBrowserTTS(activeCall.queue, activeCall.destinationKey, currentLang);
+    }
+
+    // Language switch handler
+    languageSelect.addEventListener("change", function () {
+      currentLang = this.value;
+      try {
+        localStorage.setItem(LANG_PREF_KEY, currentLang);
+      } catch (e) {}
+      applyLocalizedDisplay();
+      speakCurrentQueue();
+    });
+
+    document.getElementById("announceAudioBtn").addEventListener("click", speakCurrentQueue);
+
+    document.getElementById("nextQueueBtn").addEventListener("click", function () {
+      recentlyCalled.unshift({
+        queue: activeCall.queue,
+        destinationKey: activeCall.destinationKey,
+        time: "Just now"
+      });
+
+      currentIndex = (currentIndex + 1) % callSequence.length;
+      activeCall = { ...callSequence[currentIndex] };
+
+      applyLocalizedDisplay();
+      speakCurrentQueue();
+    });
+
+    // Listen for live calls pushed from Triage / Consultation / Lab / Pharmacy
+    window.addEventListener("storage", function (event) {
+      if (event.key === QUEUE_CALL_KEY && event.newValue) {
+        try {
+          const incoming = JSON.parse(event.newValue);
+          if (incoming && incoming.ticket && incoming.destination) {
+            recentlyCalled.unshift({
+              queue: activeCall.queue,
+              destinationKey: activeCall.destinationKey,
+              time: "Just now"
+            });
+            activeCall = {
+              queue: incoming.ticket,
+              destinationKey: incoming.destination
+            };
+            applyLocalizedDisplay();
+            speakCurrentQueue();
+          }
+        } catch (err) {}
+      }
+    });
+
+    // Initial render
+    applyLocalizedDisplay();
+  </script>
+</body>
+</html>

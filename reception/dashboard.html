@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reception Desk | AfyaNjia</title>
+  <style>
+    /* =========================================
+       1. DESIGN TOKENS & RESET
+       ========================================= */
+    :root {
+      --navy: #0f2537;
+      --navy-hover: #18364f;
+      --navy-active: #1d4463;
+      --blue: #1d63b8;
+      --blue-hover: #154e94;
+      --teal: #0d9488;
+      --teal-soft: #e6f6f4;
+      --bg-page: #f4f7fa;
+      --surface: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 10px;
+      --shadow-sm: 0 1px 3px rgba(15, 37, 55, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.5;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* =========================================
+       2. APP SHELL (SIDEBAR + MAIN AREA)
+       ========================================= */
+    .app-shell {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 250px;
+      background-color: var(--navy);
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      transition: transform 0.25s ease;
+    }
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 20px 22px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      font-weight: 700;
+      font-size: 1.25rem;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background-color: var(--blue);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.95rem;
+      border-bottom: 3px solid var(--teal);
+    }
+
+    .sidebar-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #94a3b8;
+      padding: 18px 22px 8px;
+      font-weight: 600;
+    }
+
+    .sidebar-nav {
+      list-style: none;
+      padding: 0 12px;
+      flex: 1;
+    }
+
+    .sidebar-nav li {
+      margin-bottom: 4px;
+    }
+
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.92rem;
+      color: #cbd5e1;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    .sidebar-nav a:hover {
+      background-color: var(--navy-hover);
+      color: #ffffff;
+    }
+
+    .sidebar-nav a.active {
+      background-color: var(--navy-active);
+      color: #ffffff;
+      font-weight: 600;
+      border-left: 3px solid var(--teal);
+    }
+
+    .sidebar-footer {
+      padding: 16px 22px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 0.8rem;
+      color: #94a3b8;
+    }
+
+    /* =========================================
+       3. TOPBAR & CONTENT CONTAINER
+       ========================================= */
+    .main-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .topbar {
+      height: 68px;
+      background-color: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .menu-btn {
+      display: none;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 1.1rem;
+      color: var(--navy);
+      cursor: pointer;
+    }
+
+    .page-title {
+      font-size: 1.22rem;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .dept-badge {
+      font-size: 0.8rem;
+      background-color: var(--teal-soft);
+      color: var(--teal);
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    .staff-profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .staff-info {
+      text-align: right;
+    }
+
+    .staff-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--navy);
+    }
+
+    .staff-role {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background-color: var(--blue);
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.88rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .content {
+      padding: 28px;
+      max-width: 1280px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* =========================================
+       4. STATS & TWO-COLUMN LAYOUT
+       ========================================= */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stat-label {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .stat-value {
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 24px;
+      margin-bottom: 26px;
+      align-items: start;
+    }
+
+    .panel {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .panel-header {
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-title {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .panel-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    /* =========================================
+       5. FORM CONTROLS & BUTTONS
+       ========================================= */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 0.86rem;
+      font-weight: 600;
+      color: var(--navy);
+    }
+
+    input,
+    select,
+    textarea {
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.92rem;
+      font-family: inherit;
+      color: var(--text-main);
+      background-color: #ffffff;
+      transition: border-color 0.2s;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--blue);
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .btn {
+      padding: 11px 20px;
+      border-radius: 8px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: background-color 0.2s;
+    }
+
+    .btn-primary {
+      background-color: var(--blue);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--blue-hover);
+    }
+
+    .btn-secondary {
+      background-color: #f1f5f9;
+      color: var(--text-main);
+      border-color: var(--border);
+    }
+
+    .btn-secondary:hover {
+      background-color: #e2e8f0;
+    }
+
+    .demo-note {
+      margin-top: 12px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* =========================================
+       6. GENERATED QUEUE TICKET CARD
+       ========================================= */
+    .ticket-card {
+      border: 2px solid var(--teal);
+      border-radius: var(--radius);
+      background-color: #f8fdfc;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .ticket-tag {
+      display: inline-block;
+      background-color: var(--teal);
+      color: #ffffff;
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-bottom: 14px;
+    }
+
+    .ticket-number {
+      font-size: 2.6rem;
+      font-weight: 800;
+      color: var(--navy);
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .ticket-destination {
+      background-color: var(--navy);
+      color: #ffffff;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 0.96rem;
+      font-weight: 600;
+      margin: 16px 0;
+    }
+
+    .ticket-meta {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .privacy-notice {
+      margin-top: 16px;
+      padding: 10px 12px;
+      background-color: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      color: #1e40af;
+      text-align: left;
+    }
+
+    /* =========================================
+       7. RECENT REGISTRATIONS TABLE
+       ========================================= */
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    th {
+      text-align: left;
+      padding: 11px 14px;
+      background-color: #f8fafc;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    .badge-teal {
+      background-color: var(--teal-soft);
+      color: var(--teal);
+    }
+
+    .badge-blue {
+      background-color: #e0ecfa;
+      color: var(--blue);
+    }
+
+    /* =========================================
+       8. RESPONSIVE BREAKPOINTS
+       ========================================= */
+    @media (max-width: 980px) {
+      .workspace-grid {
+        grid-template-columns: 1fr;
+      }
+      .stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 200;
+        transform: translateX(-100%);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .menu-btn {
+        display: block;
+      }
+      .staff-info,
+      .dept-badge {
+        display: none;
+      }
+      .stats-grid,
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      .content {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-shell">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <a href="../index.html" class="sidebar-brand">
+        <span class="brand-mark">AN</span>
+        <span>AfyaNjia</span>
+      </a>
+
+      <div class="sidebar-label">Departments</div>
+      
+
+      <div class="sidebar-label">Public Display</div>
+      <ul class="sidebar-nav">
+        <li><a href="../waiting_room.html">Waiting Room Screen</a></li>
+      </ul>
+
+      <div class="sidebar-footer">
+        Local Clinic Network &bull; Demo Mode
+      </div>
+    </aside>
+
+    <!-- MAIN WORKSPACE -->
+    <div class="main-wrapper">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-btn" id="menuBtn" aria-label="Open Navigation">&#9776;</button>
+          <h1 class="page-title">Reception Desk</h1>
+          <span class="dept-badge">Step 1: Registration &amp; Queue Issue</span>
+        </div>
+
+        <div class="staff-profile">
+          <div class="staff-info">
+            <div class="staff-name">Peter Mutua</div>
+            <div class="staff-role">Health Records Officer</div>
+          </div>
+          <div class="avatar">PM</div>
+        </div>
+      </header>
+
+      <main class="content">
+        <!-- QUICK METRICS -->
+        <section class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Registered Today</div>
+            <div class="stat-value" id="totalRegisteredCount">48</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Latest Queue Number</div>
+            <div class="stat-value" id="latestTicketStat">AN-114</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Next Routing Destination</div>
+            <div class="stat-value" style="font-size: 1.25rem; padding-top: 6px; color: var(--teal);">Triage Station</div>
+          </div>
+        </section>
+
+        <!-- REGISTRATION FORM + LIVE QUEUE TICKET -->
+        <section class="workspace-grid">
+          <div class="panel">
+            <div class="panel-header">
+              <h2 class="panel-title">Register Arriving Patient</h2>
+              <p class="panel-subtitle">Enter visit details to generate an anonymized queue number for the dispensary floor.</p>
+            </div>
+
+            <form id="registrationForm">
+              <div class="form-grid">
+                <div class="form-group full">
+                  <label for="patientName">Patient Full Name (Internal Register Only)</label>
+                  <input type="text" id="patientName" placeholder="e.g., Mary Nduku" required />
+                </div>
+
+                <div class="form-group">
+                  <label for="patientAge">Age (Years)</label>
+                  <input type="number" id="patientAge" min="0" max="120" placeholder="e.g., 34" required />
+                </div>
+
+                <div class="form-group">
+                  <label for="patientSex">Sex</label>
+                  <select id="patientSex" required>
+                    <option value="">Select sex...</option>
+                    <option value="Female">Female</option>
+                    <option value="Male">Male</option>
+                  </select>
+                </div>
+
+                <div class="form-group full">
+                  <label for="visitType">Visit Type</label>
+                  <select id="visitType" required>
+                    <option value="New Outpatient Visit">New Outpatient Visit</option>
+                    <option value="Follow-Up Review">Follow-Up Review</option>
+                    <option value="Maternal & Child Health (MCH)">Maternal &amp; Child Health (MCH)</option>
+                    <option value="Chronic Care Clinic">Chronic Care Clinic</option>
+                  </select>
+                </div>
+
+                <div class="form-group full">
+                  <label for="visitReason">Reason for Visit / Presenting Complaint</label>
+                  <textarea id="visitReason" rows="3" placeholder="e.g., Fever and headache for 2 days" required></textarea>
+                </div>
+              </div>
+
+              <div class="btn-row">
+                <button type="submit" class="btn btn-primary">Register &amp; Generate Queue Number</button>
+                <button type="reset" class="btn btn-secondary">Clear Form</button>
+              </div>
+              <p class="demo-note">Demonstration mode: entries update this session view locally without database persistence.</p>
+            </form>
+          </div>
+
+          <!-- GENERATED QUEUE TICKET DISPLAY -->
+          <div class="panel">
+            <div class="panel-header">
+              <h2 class="panel-title">Issued Visit Queue Ticket</h2>
+              <p class="panel-subtitle">Give this queue number verbally or on a reusable slip to the patient.</p>
+            </div>
+
+            <div class="ticket-card">
+              <span class="ticket-tag" id="ticketBadge">Active Visit Ticket</span>
+              <div class="ticket-number" id="ticketNumberDisplay">AN-114</div>
+              <div class="ticket-meta" id="ticketMetaDisplay">
+                Visit Type: <strong>New Outpatient Visit</strong> &bull; Registered at 09:42 AM
+              </div>
+
+              <div class="ticket-destination">
+                Instruction: Please direct patient to <u>Triage Station</u> and watch for queue number <span id="ticketInlineCode">AN-114</span>.
+              </div>
+
+              <div class="privacy-notice">
+                <strong>Privacy Rule:</strong> Only the queue number (e.g., <span id="ticketPrivacyCode">AN-114</span>) is displayed on the public waiting-room screen—never the patient's name or complaint.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- RECENTLY REGISTERED PATIENTS TABLE -->
+        <section class="panel">
+          <div class="panel-header">
+            <h2 class="panel-title">Recently Registered Patients (Staff View)</h2>
+            <p class="panel-subtitle">Internal reception log showing assigned queue numbers and routing status.</p>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Queue No.</th>
+                  <th>Patient Name (Staff Only)</th>
+                  <th>Age / Sex</th>
+                  <th>Visit Type</th>
+                  <th>Reason for Visit</th>
+                  <th>Next Step</th>
+                  <th>Time</th>
+                </tr>
+              </thead>
+              <tbody id="recentRegistrationsBody">
+                <!-- Populated by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // =========================================
+    // 1. STORAGE KEYS & PROTOTYPE RBAC GUARD
+    // =========================================
+    const SESSION_KEY = "afyanjia_demo_session";
+    const QUEUE_CALL_KEY = "afyanjia_active_queue_call";
+    const DEPT_QUEUE_KEY = "afyanjia_department_queues";
+    const REQUIRED_ROLE = "reception";
+
+    const activeSession = JSON.parse(
+      localStorage.getItem(SESSION_KEY) || sessionStorage.getItem(SESSION_KEY) || "null"
+    );
+    if (!activeSession || (activeSession.role !== "admin" && activeSession.role !== REQUIRED_ROLE)) {
+      window.location.href = "../index.html?auth_required=" + REQUIRED_ROLE;
+    }
+
+    // Mobile sidebar toggle
+    const menuBtn = document.getElementById("menuBtn");
+    const sidebar = document.getElementById("sidebar");
+    if (menuBtn && sidebar) {
+      menuBtn.addEventListener("click", function () {
+        sidebar.classList.toggle("open");
+      });
+    }
+
+    // =========================================
+    // 2. SHARED CROSS-DEPARTMENT QUEUE HELPERS
+    // =========================================
+    function loadDepartmentQueues() {
+      try {
+        const raw = localStorage.getItem(DEPT_QUEUE_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (err) {
+        return [];
+      }
+    }
+
+    function passTicketToDestination(ticketPayload) {
+      try {
+        const current = loadDepartmentQueues();
+        const withoutDuplicate = current.filter(
+          item => item.ticket.toUpperCase() !== ticketPayload.ticket.toUpperCase()
+        );
+        withoutDuplicate.unshift(ticketPayload);
+        localStorage.setItem(DEPT_QUEUE_KEY, JSON.stringify(withoutDuplicate));
+      } catch (err) {
+        // Ignore storage errors in restricted environments
+      }
+    }
+
+    // Compute next R-series ticket number (continues smoothly after R028)
+    function getNextTicketNumber() {
+      const existing = loadDepartmentQueues();
+      let maxNum = 28;
+      existing.forEach(item => {
+        const match = String(item.ticket || "").match(/^R0*(\d+)$/i);
+        if (match) {
+          const num = parseInt(match[1], 10);
+          if (num > maxNum) maxNum = num;
+        }
+      });
+      return maxNum + 1;
+    }
+
+    function formatTicketCode(num) {
+      return "R" + String(num).padStart(3, "0");
+    }
+
+    // =========================================
+    // 3. RECEPTION REGISTRATION & HANDOFF
+    // =========================================
+    let nextSequence = getNextTicketNumber();
+    let totalRegistered = 48;
+
+    const recentPatients = [
+      {
+        queue: "R028",
+        name: "Faith Kavata",
+        age: 29,
+        sex: "Female",
+        visitType: "Follow-Up Review",
+        reason: "Persistent cough and mild fever",
+        nextStep: "Directed to Triage",
+        time: "09:18 AM"
+      },
+      {
+        queue: "R027",
+        name: "Samuel Njoroge",
+        age: 52,
+        sex: "Male",
+        visitType: "MCH Visit",
+        reason: "Routine blood pressure check & refill",
+        nextStep: "Directed to Triage",
+        time: "09:12 AM"
+      },
+      {
+        queue: "R026",
+        name: "Beatrice Achieng",
+        age: 6,
+        sex: "Female",
+        visitType: "New Outpatient Visit",
+        reason: "High temperature since last night",
+        nextStep: "Directed to Triage",
+        time: "09:07 AM"
+      },
+      {
+        queue: "R025",
+        name: "Joseph Kimani",
+        age: 41,
+        sex: "Male",
+        visitType: "New Outpatient Visit",
+        reason: "Review of laboratory test results",
+        nextStep: "Directed to Triage",
+        time: "09:02 AM"
+      }
+    ];
+
+    const tableBody = document.getElementById("recentRegistrationsBody");
+    const form = document.getElementById("registrationForm");
+
+    function renderRegistrations() {
+      if (!tableBody) return;
+      tableBody.innerHTML = recentPatients.map(p => `
+        <tr>
+          <td><strong>${p.queue}</strong></td>
+          <td>${p.name}</td>
+          <td>${p.age} yrs / ${p.sex}</td>
+          <td><span class="badge badge-blue">${p.visitType}</span></td>
+          <td>${p.reason}</td>
+          <td><span class="badge badge-teal">${p.nextStep}</span></td>
+          <td>${p.time}</td>
+        </tr>
+      `).join("");
+    }
+
+    function getCurrentTimeLabel() {
+      const now = new Date();
+      return now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    }
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      const name = document.getElementById("patientName").value.trim();
+      const age = document.getElementById("patientAge").value.trim();
+      const sex = document.getElementById("patientSex").value;
+      const visitType = document.getElementById("visitType").value;
+      const reason = document.getElementById("visitReason").value.trim();
+
+      // Optional destination dropdown if present on form; defaults to "Triage"
+      const destSelect = document.getElementById("destinationSelect");
+      const targetDepartment = destSelect && destSelect.value ? destSelect.value : "Triage";
+
+      if (!name || !age || !sex || !reason) return;
+
+      nextSequence = Math.max(nextSequence, getNextTicketNumber());
+      const generatedQueue = formatTicketCode(nextSequence);
+      nextSequence += 1;
+      totalRegistered += 1;
+      const timeLabel = getCurrentTimeLabel();
+
+      // 1. Push ticket into shared cross-department store so target department sees it immediately
+      passTicketToDestination({
+        ticket: generatedQueue,
+        currentDepartment: targetDepartment,
+        priority: "Routine",
+        visitType: visitType,
+        notes: reason,
+        routedFrom: "Reception",
+        routedAt: timeLabel,
+        status: "Waiting"
+      });
+
+      // 2. If sent directly to Pharmacy/Lab/Consultation (bypassing Triage), announce on waiting_room.html
+      if (targetDepartment !== "Triage") {
+        try {
+          localStorage.setItem(QUEUE_CALL_KEY, JSON.stringify({
+            ticket: generatedQueue,
+            destination: targetDepartment,
+            department: "Reception",
+            timestamp: Date.now()
+          }));
+        } catch (err) {}
+      }
+
+      // 3. Update top statistics
+      const totalEl = document.getElementById("totalRegisteredCount");
+      const latestEl = document.getElementById("latestTicketStat");
+      if (totalEl) totalEl.textContent = totalRegistered;
+      if (latestEl) latestEl.textContent = generatedQueue;
+
+      // 4. Update visible queue ticket card (anonymized for patient/public visibility)
+      const badgeEl = document.getElementById("ticketBadge");
+      const numEl = document.getElementById("ticketNumberDisplay");
+      const metaEl = document.getElementById("ticketMetaDisplay");
+      const inlineEl = document.getElementById("ticketInlineCode");
+      const privacyEl = document.getElementById("ticketPrivacyCode");
+
+      if (badgeEl) badgeEl.textContent = `New Ticket Issued → ${targetDepartment}`;
+      if (numEl) numEl.textContent = generatedQueue;
+      if (metaEl) {
+        metaEl.innerHTML =
+          `Visit Type: <strong>${visitType}</strong> &bull; Directed to <strong>${targetDepartment}</strong> at ${timeLabel}`;
+      }
+      if (inlineEl) inlineEl.textContent = generatedQueue;
+      if (privacyEl) privacyEl.textContent = generatedQueue;
+
+      // 5. Add to top of internal staff table (name kept internal to Reception only)
+      recentPatients.unshift({
+        queue: generatedQueue,
+        name: name,
+        age: age,
+        sex: sex,
+        visitType: visitType,
+        reason: reason,
+        nextStep: `Directed to ${targetDepartment}`,
+        time: timeLabel
+      });
+
+      renderRegistrations();
+      form.reset();
+    });
+
+    // Initial table render
+    renderRegistrations();
+  </script>
+</body>
+</html>

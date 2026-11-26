@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AfyaNjia | Patient-Flow Coordination for Rural Dispensaries</title>
+  <style>
+    /* =========================================
+       1. DESIGN TOKENS & RESET
+       ========================================= */
+    :root {
+      --navy: #0f2537;
+      --navy-light: #1a3852;
+      --blue: #1d63b8;
+      --blue-hover: #154e94;
+      --teal: #0d9488;
+      --teal-soft: #e6f6f4;
+      --bg-page: #f4f7fa;
+      --surface: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 10px;
+      --shadow-sm: 0 1px 3px rgba(15, 37, 55, 0.06);
+      --shadow-float: 0 20px 45px rgba(15, 37, 55, 0.24);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* =========================================
+       2. TOP NAVIGATION BAR & HAMBURGER DRAWER
+       ========================================= */
+    .navbar {
+      background-color: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .navbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 70px;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.35rem;
+      color: var(--navy);
+      flex-shrink: 0;
+    }
+
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background-color: var(--navy);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1rem;
+      border-bottom: 3px solid var(--teal);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 26px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--blue);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .session-pill {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background-color: var(--teal-soft);
+      color: var(--teal);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .session-pill.active {
+      display: inline-flex;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 9px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+    }
+
+    .btn-primary {
+      background-color: var(--blue);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--blue-hover);
+    }
+
+    .btn-outline {
+      background-color: var(--surface);
+      color: var(--navy);
+      border-color: var(--border);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--teal);
+      color: var(--teal);
+    }
+
+    .btn-teal {
+      background-color: var(--teal);
+      color: #ffffff;
+    }
+
+    .btn-teal:hover {
+      background-color: #0b7a70;
+    }
+
+    .btn-ghost-danger {
+      background-color: transparent;
+      color: #b91c1c;
+      border-color: #fecaca;
+      padding: 7px 12px;
+      font-size: 0.82rem;
+    }
+
+    .btn-ghost-danger:hover {
+      background-color: #fef2f2;
+    }
+
+    /* Hamburger Icon Button */
+    .hamburger-btn {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      width: 42px;
+      height: 42px;
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      padding: 8px;
+    }
+
+    .hamburger-btn:hover {
+      border-color: var(--blue);
+      background-color: #f8fafc;
+    }
+
+    .hamburger-line {
+      width: 20px;
+      height: 2px;
+      background-color: var(--navy);
+      border-radius: 2px;
+    }
+
+    /* Mobile Drawer + Backdrop */
+    .drawer-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background-color: rgba(15, 37, 55, 0.5);
+      z-index: 190;
+    }
+
+    .drawer-backdrop.open {
+      display: block;
+    }
+
+    .mobile-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 285px;
+      max-width: 84vw;
+      background-color: var(--surface);
+      z-index: 200;
+      padding: 20px 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: -8px 0 24px rgba(15, 37, 55, 0.14);
+      transform: translateX(100%);
+      transition: transform 0.25s ease;
+    }
+
+    .mobile-drawer.open {
+      transform: translateX(0);
+    }
+
+    .drawer-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 18px;
+    }
+
+    .drawer-close {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      color: var(--navy);
+      font-size: 1.25rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .drawer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .drawer-links a {
+      display: block;
+      padding: 11px 12px;
+      border-radius: 8px;
+      font-size: 0.96rem;
+      font-weight: 600;
+      color: var(--navy);
+    }
+
+    .drawer-links a:hover {
+      background-color: #f1f5f9;
+      color: var(--blue);
+    }
+
+    .drawer-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* =========================================
+       3. HERO SECTION
+       ========================================= */
+    .hero {
+      background-color: var(--navy);
+      color: #ffffff;
+      padding: 68px 0 76px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 0.95fr;
+      gap: 44px;
+      align-items: center;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background-color: rgba(13, 148, 136, 0.2);
+      color: #5eead4;
+      border: 1px solid rgba(94, 234, 212, 0.35);
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      margin-bottom: 18px;
+    }
+
+    .hero h1 {
+      font-size: 2.35rem;
+      line-height: 1.22;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    .hero p {
+      color: #cbd5e1;
+      font-size: 1.05rem;
+      margin-bottom: 28px;
+      max-width: 580px;
+    }
+
+    .hero-cta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .hero-card {
+      background-color: var(--navy-light);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius);
+      padding: 26px;
+    }
+
+    .hero-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 14px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 0.88rem;
+      color: #94a3b8;
+    }
+
+    .live-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #5eead4;
+      font-weight: 600;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #14b8a6;
+    }
+
+    .preview-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: rgba(15, 37, 55, 0.55);
+      padding: 12px 14px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .preview-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .preview-ticket {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: #ffffff;
+    }
+
+    .preview-dept {
+      font-size: 0.85rem;
+      color: #cbd5e1;
+    }
+
+    .preview-status {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background-color: rgba(13, 148, 136, 0.25);
+      color: #5eead4;
+    }
+
+    /* =========================================
+       4. SECTIONS, JOURNEY & ROLE-GATED CARDS
+       ========================================= */
+    .section {
+      padding: 64px 0;
+    }
+
+    .section-white {
+      background-color: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-header {
+      max-width: 680px;
+      margin-bottom: 36px;
+    }
+
+    .section-kicker {
+      color: var(--teal);
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 8px;
+    }
+
+    .section-header h2 {
+      font-size: 1.75rem;
+      color: var(--navy);
+      margin-bottom: 10px;
+    }
+
+    .section-header p {
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+
+    .problem-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .card {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card h3 {
+      font-size: 1.1rem;
+      color: var(--navy);
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      font-size: 0.94rem;
+      color: var(--text-muted);
+    }
+
+    .icon-box {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background-color: var(--teal-soft);
+      color: var(--teal);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .journey-steps {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+    }
+
+    .step-card {
+      background-color: var(--bg-page);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 18px;
+    }
+
+    .step-number {
+      display: inline-block;
+      background-color: var(--navy);
+      color: #ffffff;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+    }
+
+    .step-card h4 {
+      font-size: 1rem;
+      color: var(--navy);
+      margin-bottom: 6px;
+    }
+
+    .step-card p {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+    }
+
+    .dept-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .dept-card {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-top: 4px solid var(--blue);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .dept-card.teal-accent {
+      border-top-color: var(--teal);
+    }
+
+    .dept-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .dept-role-tag {
+      display: inline-block;
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--teal);
+      background-color: var(--teal-soft);
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    .lock-badge {
+      font-size: 0.74rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background-color: #f1f5f9;
+      color: var(--text-muted);
+    }
+
+    .lock-badge.unlocked {
+      background-color: #e0ecfa;
+      color: var(--blue);
+    }
+
+    .dept-card h3 {
+      font-size: 1.12rem;
+      color: var(--navy);
+      margin-bottom: 8px;
+    }
+
+    .dept-card p {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+    }
+
+    .dept-action-btn {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--blue);
+      background: #f8fbff;
+      border: 1px solid #dbeafe;
+      border-radius: 8px;
+      padding: 9px 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+
+    .dept-action-btn:hover {
+      background-color: #eff6ff;
+      border-color: var(--blue);
+    }
+
+    /* =========================================
+       5. FLOATING STAFF LOGIN MODAL (RBAC)
+       ========================================= */
+    .login-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background-color: rgba(15, 37, 55, 0.65);
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .login-backdrop.open {
+      display: flex;
+    }
+
+    .login-floating-card {
+      width: 100%;
+      max-width: 460px;
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-top: 5px solid var(--teal);
+      border-radius: 14px;
+      box-shadow: var(--shadow-float);
+      padding: 26px 28px;
+      position: relative;
+    }
+
+    .login-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .login-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .login-subtitle {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    .modal-close-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background-color: #f8fafc;
+      color: var(--navy);
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .modal-close-btn:hover {
+      background-color: #e2e8f0;
+    }
+
+    .rbac-alert {
+      display: none;
+      background-color: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+
+    .rbac-alert.show {
+      display: block;
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .form-field label {
+      font-size: 0.86rem;
+      font-weight: 600;
+      color: var(--navy);
+    }
+
+    .form-field input,
+    .form-field select {
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.92rem;
+      font-family: inherit;
+      color: var(--text-main);
+      background-color: #ffffff;
+    }
+
+    .form-field input:focus,
+    .form-field select:focus {
+      outline: none;
+      border-color: var(--blue);
+    }
+
+    .demo-presets {
+      margin-bottom: 16px;
+    }
+
+    .demo-presets-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .preset-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .preset-chip {
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background-color: #f8fafc;
+      color: var(--navy);
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .preset-chip:hover {
+      border-color: var(--teal);
+      background-color: var(--teal-soft);
+      color: var(--teal);
+    }
+
+    .login-submit-btn {
+      width: 100%;
+      padding: 11px 18px;
+      border-radius: 8px;
+      background-color: var(--blue);
+      color: #ffffff;
+      font-size: 0.94rem;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+    }
+
+    .login-submit-btn:hover {
+      background-color: var(--blue-hover);
+    }
+
+    .proto-note {
+      margin-top: 12px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    /* =========================================
+       6. FOOTER & RESPONSIVE
+       ========================================= */
+    .footer {
+      background-color: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 34px 0;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .footer-btn-link {
+      background: none;
+      border: none;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .footer-btn-link:hover {
+      color: var(--blue);
+    }
+
+    @media (max-width: 960px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+      .problem-grid,
+      .dept-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .journey-steps {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 860px) {
+      .nav-links,
+      .nav-actions {
+        display: none;
+      }
+      .hamburger-btn {
+        display: flex;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .hero h1 {
+        font-size: 1.85rem;
+      }
+      .problem-grid,
+      .dept-grid,
+      .journey-steps {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP NAVIGATION -->
+  <header class="navbar">
+    <div class="container navbar-inner">
+      <a href="index.html" class="brand">
+        <span class="brand-mark">AN</span>
+        <span>AfyaNjia</span>
+      </a>
+
+
+      <div class="nav-actions">
+        
+        <button type="button" class="btn btn-ghost-danger" id="desktopLogoutBtn" style="display: none;">Sign Out</button>
+        <button type="button" class="btn btn-outline" data-target-role="waiting_room" data-target-url="waiting_room.html">Waiting-Room Screen</button>
+        <button type="button" class="btn btn-primary" id="desktopLoginBtn">Staff Login</button>
+      </div>
+
+      <button type="button" class="hamburger-btn" id="openDrawerBtn" aria-label="Open Navigation Menu" aria-expanded="false">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MOBILE HAMBURGER DRAWER & BACKDROP -->
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <nav class="mobile-drawer" id="mobileDrawer" aria-label="Mobile Navigation">
+    <div>
+      <div class="drawer-top">
+        <span class="brand" style="font-size: 1.15rem;">
+          <span class="brand-mark" style="width: 30px; height: 30px; font-size: 0.85rem;">AN</span>
+          <span>AfyaNjia</span>
+        </span>
+        <button type="button" class="drawer-close" id="closeDrawerBtn" aria-label="Close Menu">&times;</button>
+      </div>
+
+      <div class="session-pill" id="mobileSessionBadge" style="margin-bottom: 14px;"></div>
+
+      <ul class="drawer-links">
+        <li><a href="#problem" class="drawer-nav-item">Why AfyaNjia</a></li>
+        <li><a href="#journey" class="drawer-nav-item">Patient Journey</a></li>
+        <li><a href="#departments" class="drawer-nav-item">Role-Scoped Workspaces</a></li>
+      </ul>
+    </div>
+
+    <div class="drawer-actions">
+      <button type="button" class="btn btn-outline" data-target-role="waiting_room" data-target-url="templates/waiting_room.html">Waiting-Room Screen</button>
+      <button type="button" class="btn btn-primary" id="mobileLoginBtn">Staff Login</button>
+      <button type="button" class="btn btn-ghost-danger" id="mobileLogoutBtn" style="display: none;">Sign Out</button>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <span class="hero-badge">Rural Public Dispensary Coordination</span>
+        <h1>Clear patient pathways from arrival to medication.</h1>
+        <p>
+          AfyaNjia coordinates Reception, Triage, Consultation, Laboratory, and Pharmacy over a local clinic network—with role-authenticated workspaces, persistent visit tickets, and a protected waiting-room display.
+        </p>
+        <div class="hero-cta">
+          <button type="button" class="btn btn-teal" id="heroStaffBtn">Sign In to Staff Workspace</button>
+          <button type="button" class="btn btn-outline" data-target-role="waiting_room" data-target-url="waiting_room.html">Launch Waiting-Room Screen</button>
+        </div>
+      </div>
+
+      <div class="hero-card">
+        <div class="hero-card-header">
+          <span>CENTRAL WAITING SCREEN PREVIEW</span>
+          <span class="live-pill"><span class="live-dot"></span> Staff-Triggered Calls</span>
+        </div>
+        <div class="preview-row">
+          <div>
+            <div class="preview-ticket">R025</div>
+            <div class="preview-dept">Proceed to Triage Desk</div>
+          </div>
+          <span class="preview-status">Now Calling</span>
+        </div>
+        <div class="preview-row">
+          <div>
+            <div class="preview-ticket">R024</div>
+            <div class="preview-dept">Proceed to Consultation Room 1</div>
+          </div>
+          <span class="preview-status">Recent</span>
+        </div>
+        <div class="preview-row">
+          <div>
+            <div class="preview-ticket">R021</div>
+            <div class="preview-dept">Proceed to Pharmacy Counter</div>
+          </div>
+          <span class="preview-status">Recent</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEM STATEMENT -->
+  <section class="section" id="problem">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-kicker">Why AfyaNjia</div>
+        <h2>Structured coordination with role-restricted access</h2>
+        <p>
+          Every workspace and display terminal requires authorized staff sign-in, while visit tickets move cleanly from reception to completion without duplicate numbers or unprompted audio calls.
+        </p>
+      </div>
+
+      <div class="problem-grid">
+        <div class="card">
+          <div class="icon-box">01</div>
+          <h3>Registration vs. Calling Separated</h3>
+          <p>
+            Registering a patient generates a persistent ticket (e.g., <strong>R025</strong>) and queues them for triage—without automatically announcing every arrival on the waiting screen.
+          </p>
+        </div>
+        <div class="card">
+          <div class="icon-box">02</div>
+          <h3>Intrusion-Protected Terminals</h3>
+          <p>
+            Every department portal and the waiting-room screen require role sign-in so unauthorized visitors cannot alter queues or jump between workspaces.
+          </p>
+        </div>
+        <div class="card">
+          <div class="icon-box">03</div>
+          <h3>Centralized Audio &amp; Visual Calls</h3>
+          <p>
+            When staff click <strong>Call Next Patient</strong>, the central waiting screen updates and browser <code>SpeechSynthesis</code> announces the ticket number clearly.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PATIENT JOURNEY -->
+  <section class="section section-white" id="journey">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-kicker">Persistent Ticket Flow</div>
+        <h2>How a patient ticket moves through the dispensary</h2>
+        <p>
+          The ticket number stays the same throughout the visit; only its department, status, and destination update as care progresses.
+        </p>
+      </div>
+
+      <div class="journey-steps">
+        <div class="step-card">
+          <span class="step-number">1. Reception</span>
+          <h4>Register &amp; Issue Ticket</h4>
+          <p>Enters visit reason, generates ticket (e.g., R025), tells patient verbally, and queues for triage.</p>
+        </div>
+        <div class="step-card">
+          <span class="step-number">2. Triage</span>
+          <h4>Call, Assess &amp; Route</h4>
+          <p>Nurse clicks Call Next Patient, records observations, and chooses next destination.</p>
+        </div>
+        <div class="step-card">
+          <span class="step-number">3. Consultation</span>
+          <h4>Call &amp; Decide Care</h4>
+          <p>Clinician calls ticket, records notes, and routes to lab, pharmacy, follow-up, referral, or complete.</p>
+        </div>
+        <div class="step-card">
+          <span class="step-number">4. Laboratory</span>
+          <h4>Call &amp; Process Tests</h4>
+          <p>Lab calls ticket when ready, processes requested tests, and updates completion status.</p>
+        </div>
+        <div class="step-card">
+          <span class="step-number">5. Pharmacy</span>
+          <h4>Call &amp; Dispense</h4>
+          <p>Pharmacy calls ticket, prepares prescribed medicines, and marks visit completed.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROLE-SCOPED WORKSPACES (ALL 6 LOCKED BEHIND LOGIN) -->
+  <section class="section" id="departments">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-kicker">Role-Scoped Workspaces</div>
+        <h2>Department portals &amp; waiting-room display</h2>
+        <p>
+          All department portals and the waiting-room display require staff authentication to prevent unauthorized access on clinic computers.
+        </p>
+      </div>
+
+      <div class="dept-grid">
+        <div class="dept-card">
+          <div>
+            <div class="dept-card-top">
+              <span class="dept-role-tag">Role: Reception</span>
+              <span class="lock-badge" data-lock-for="reception">&#128274; Login Required</span>
+            </div>
+            <h3>Reception Desk</h3>
+            <p>Register patients, record visit reason, and issue a persistent ticket without auto-announcing.</p>
+          </div>
+          <button type="button" class="dept-action-btn" data-target-role="reception" data-target-url="reception/dashboard.html">
+            <span>Sign In &amp; Open Reception</span>
+            <span>&rarr;</span>
+          </button>
+        </div>
+
+        <div class="dept-card teal-accent">
+          <div>
+            <div class="dept-card-top">
+              <span class="dept-role-tag">Role: Triage</span>
+              <span class="lock-badge" data-lock-for="triage">&#128274; Login Required</span>
+            </div>
+            <h3>Triage Station</h3>
+            <p>Call next patient to waiting screen, record vitals &amp; observations, and select next destination.</p>
+          </div>
+          <button type="button" class="dept-action-btn" data-target-role="triage" data-target-url="triage/dashboard.html">
+            <span>Sign In &amp; Open Triage</span>
+            <span>&rarr;</span>
+          </button>
+        </div>
+
+        <div class="dept-card">
+          <div>
+            <div class="dept-card-top">
+              <span class="dept-role-tag">Role: Consultation</span>
+              <span class="lock-badge" data-lock-for="consultation">&#128274; Login Required</span>
+            </div>
+            <h3>Consultation Room</h3>
+            <p>Call ticket to consultation room, record clinical notes, and select lab, pharmacy, or next action.</p>
+          </div>
+          <button type="button" class="dept-action-btn" data-target-role="consultation" data-target-url="consultation/dashboard.html">
+            <span>Sign In &amp; Open Consultation</span>
+            <span>&rarr;</span>
+          </button>
+        </div>
+
+        <div class="dept-card teal-accent">
+          <div>
+            <div class="dept-card-top">
+              <span class="dept-role-tag">Role: Laboratory</span>
+              <span class="lock-badge" data-lock-for="laboratory">&#128274; Login Required</span>
+            </div>
+            <h3>Laboratory</h3>
+            <p>Call queued tickets, manage pending and processing tests, and update test status.</p>
+          </div>
+          <button type="button" class="dept-action-btn" data-target-role="laboratory" data-target-url="laboratory/dashboard.html">
+            <span>Sign In &amp; Open Laboratory</span>
+            <span>&rarr;</span>
+          </button>
+        </div>
+
+        <div class="dept-card">
+          <div>
+            <div class="dept-card-top">
+              <span class="dept-role-tag">Role: Pharmacy</span>
+              <span class="lock-badge" data-lock-for="pharmacy">&#128274; Login Required</span>
+            </div>
+            <h3>Pharmacy</h3>
+            <p>Call patients for prescriptions, track preparation, and record dispensing completion.</p>
+          </div>
+          <button type="button" class="dept-action-btn" data-target-role="pharmacy" data-target-url="pharmacy/dashboard.html">
+            <span>Sign In &amp; Open Pharmacy</span>
+            <span>&rarr;</span>
+          </button>
+        </div>
+
+        <div class="dept-card teal-accent">
+          <div>
+            <div class="dept-card-top">
+              <span class="dept-role-tag">Authorized Display</span>
+              <span class="lock-badge" data-lock-for="waiting_room">&#128274; Login Required</span>
+            </div>
+            <h3>Central Waiting-Room Screen</h3>
+            <p>Protected waiting-area monitor showing called ticket numbers, target rooms, and spoken announcements.</p>
+          </div>
+          <button type="button" class="dept-action-btn" data-target-role="waiting_room" data-target-url="waiting_room.html">
+            <span>Sign In &amp; Launch Display</span>
+            <span>&rarr;</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FLOATING STAFF LOGIN PAGE / MODAL -->
+  <div class="login-backdrop" id="loginModalBackdrop" role="dialog" aria-modal="true" aria-labelledby="loginModalTitle">
+    <div class="login-floating-card" id="loginFloatingCard">
+      <div class="login-header">
+        <div>
+          <h2 class="login-title" id="loginModalTitle">AfyaNjia Staff Login</h2>
+          <p class="login-subtitle">Authenticate to unlock your assigned workspace or display terminal.</p>
+        </div>
+        <button type="button" class="modal-close-btn" id="closeLoginModalBtn" aria-label="Close Login Window">&times;</button>
+      </div>
+
+      <div class="rbac-alert" id="rbacAlertBox"></div>
+
+      <div class="demo-presets">
+        <span class="demo-presets-label">Quick Demo Role Fill (Prototype RBAC):</span>
+        <div class="preset-chips">
+          <button type="button" class="preset-chip" data-preset="reception|Peter Mutua|REC-01">Reception</button>
+          <button type="button" class="preset-chip" data-preset="triage|Nurse Esther|TRG-02">Triage</button>
+          <button type="button" class="preset-chip" data-preset="consultation|CO David|CON-01">Consultation</button>
+          <button type="button" class="preset-chip" data-preset="laboratory|Brian Kamau|LAB-01">Laboratory</button>
+          <button type="button" class="preset-chip" data-preset="pharmacy|Lilian Chebet|PHM-01">Pharmacy</button>
+          <button type="button" class="preset-chip" data-preset="waiting_room|Display Terminal|DSP-01">Display Screen</button>
+          <button type="button" class="preset-chip" data-preset="admin|Grace Wanjiku|ADM-01">Admin</button>
+        </div>
+      </div>
+
+      <form id="staffLoginForm">
+        <div class="form-field">
+          <label for="loginRoleSelect">Assigned Role / Terminal</label>
+          <select id="loginRoleSelect" required>
+            <option value="reception">Receptionist</option>
+            <option value="triage">Triage Nurse</option>
+            <option value="consultation">Clinician / Consultation</option>
+            <option value="laboratory">Laboratory Technologist</option>
+            <option value="pharmacy">Pharmacy Staff</option>
+            <option value="waiting_room">Waiting-Room Display Terminal</option>
+            <option value="admin">Facility Administrator</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label for="staffNameInput">Staff Name / Terminal ID</label>
+          <input type="text" id="staffNameInput" value="Peter Mutua (REC-01)" required />
+        </div>
+
+        <div class="form-field">
+          <label for="staffPinInput">Clinic Passcode</label>
+          <input type="password" id="staffPinInput" value="1234" required />
+        </div>
+
+        <button type="submit" class="login-submit-btn">Sign In &amp; Continue</button>
+        <p class="proto-note">Frontend prototype RBAC only — Django &amp; server authentication will follow later.</p>
+      </form>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div>
+        <strong>AfyaNjia</strong> &mdash; Rural Public Dispensary Patient-Flow Coordination Prototype.
+      </div>
+      <div class="footer-links">
+        <button type="button" class="footer-btn-link" data-target-role="admin" data-target-url="admin/dashboard.html">Admin</button>
+        <button type="button" class="footer-btn-link" data-target-role="reception" data-target-url="reception/dashboard.html">Reception</button>
+        <button type="button" class="footer-btn-link" data-target-role="triage" data-target-url="triage/dashboard.html">Triage</button>
+        <button type="button" class="footer-btn-link" data-target-role="consultation" data-target-url="consultation/dashboard.html">Consultation</button>
+        <button type="button" class="footer-btn-link" data-target-role="laboratory" data-target-url="laboratory/dashboard.html">Laboratory</button>
+        <button type="button" class="footer-btn-link" data-target-role="pharmacy" data-target-url="pharmacy/dashboard.html">Pharmacy</button>
+        <button type="button" class="footer-btn-link" data-target-role="waiting_room" data-target-url="waiting_room.html">Waiting Room</button>
+      </div>
+    </div>
+  </footer>
+<script>
+    const SESSION_KEY = "afyanjia_demo_session";
+
+    const ROLE_ROUTES = {
+      reception: "reception/dashboard.html",
+      triage: "triage/dashboard.html",
+      consultation: "consultation/dashboard.html",
+      laboratory: "laboratory/dashboard.html",
+      pharmacy: "pharmacy/dashboard.html",
+    
+      admin: "admin/dashboard.html"
+    };
+
+    const ROLE_LABELS = {
+      reception: "Reception",
+      triage: "Triage",
+      consultation: "Consultation",
+      laboratory: "Laboratory",
+      pharmacy: "Pharmacy",
+     
+      admin: "Administration"
+    };
+
+    // =========================================
+    // 1. MOBILE HAMBURGER DRAWER CONTROLS
+    // =========================================
+    const openDrawerBtn = document.getElementById("openDrawerBtn");
+    const closeDrawerBtn = document.getElementById("closeDrawerBtn");
+    const mobileDrawer = document.getElementById("mobileDrawer");
+    const drawerBackdrop = document.getElementById("drawerBackdrop");
+
+    function openDrawer() {
+      mobileDrawer.classList.add("open");
+      drawerBackdrop.classList.add("open");
+      openDrawerBtn.setAttribute("aria-expanded", "true");
+    }
+
+    function closeDrawer() {
+      mobileDrawer.classList.remove("open");
+      drawerBackdrop.classList.remove("open");
+      openDrawerBtn.setAttribute("aria-expanded", "false");
+    }
+
+    openDrawerBtn.addEventListener("click", openDrawer);
+    closeDrawerBtn.addEventListener("click", closeDrawer);
+    drawerBackdrop.addEventListener("click", closeDrawer);
+    document.querySelectorAll(".drawer-nav-item").forEach(item => item.addEventListener("click", closeDrawer));
+
+    // =========================================
+    // 2. FLOATING LOGIN MODAL & JS RBAC
+    // =========================================
+    const loginModalBackdrop = document.getElementById("loginModalBackdrop");
+    const closeLoginModalBtn = document.getElementById("closeLoginModalBtn");
+    const staffLoginForm = document.getElementById("staffLoginForm");
+    const loginRoleSelect = document.getElementById("loginRoleSelect");
+    const staffNameInput = document.getElementById("staffNameInput");
+    const rbacAlertBox = document.getElementById("rbacAlertBox");
+
+    let pendingRedirectUrl = null;
+
+    function getSession() {
+      try {
+        // Check localStorage first (works reliably across local folders & file://), fallback to sessionStorage
+        const raw = localStorage.getItem(SESSION_KEY) || sessionStorage.getItem(SESSION_KEY);
+        return JSON.parse(raw);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function isRoleAllowed(session, requiredRole) {
+      if (!session || !session.role) return false;
+      if (session.role === "admin") return true;
+      if (requiredRole === "waiting_room") return true;
+      return session.role === requiredRole;
+    }
+
+    function saveSession(sessionObj) {
+      const serialized = JSON.stringify(sessionObj);
+      try {
+        localStorage.setItem(SESSION_KEY, serialized);
+        sessionStorage.setItem(SESSION_KEY, serialized);
+      } catch (e) {}
+      syncSessionUI();
+    }
+
+    function clearSession() {
+      try {
+        localStorage.removeItem(SESSION_KEY);
+        sessionStorage.removeItem(SESSION_KEY);
+      } catch (e) {}
+      syncSessionUI();
+    }
+
+    function openLoginModal(preselectRole, alertMessage, redirectUrl) {
+      closeDrawer();
+      pendingRedirectUrl = redirectUrl || null;
+
+      if (preselectRole && ROLE_ROUTES[preselectRole]) {
+        loginRoleSelect.value = preselectRole;
+      }
+
+      if (alertMessage) {
+        rbacAlertBox.textContent = alertMessage;
+        rbacAlertBox.classList.add("show");
+      } else {
+        rbacAlertBox.textContent = "";
+        rbacAlertBox.classList.remove("show");
+      }
+
+      loginModalBackdrop.classList.add("open");
+    }
+
+    function closeLoginModal() {
+      loginModalBackdrop.classList.remove("open");
+      pendingRedirectUrl = null;
+    }
+
+    function syncSessionUI() {
+      const session = getSession();
+      const desktopBadge = document.getElementById("desktopSessionBadge");
+      const mobileBadge = document.getElementById("mobileSessionBadge");
+      const desktopLoginBtn = document.getElementById("desktopLoginBtn");
+      const mobileLoginBtn = document.getElementById("mobileLoginBtn");
+      const desktopLogoutBtn = document.getElementById("desktopLogoutBtn");
+      const mobileLogoutBtn = document.getElementById("mobileLogoutBtn");
+
+      if (session && session.role) {
+        const label = `${session.staffName} · ${ROLE_LABELS[session.role] || session.role}`;
+        desktopBadge.textContent = label;
+        mobileBadge.textContent = label;
+        desktopBadge.classList.add("active");
+        mobileBadge.classList.add("active");
+
+        desktopLoginBtn.textContent = "Switch Staff / Login";
+        mobileLoginBtn.textContent = "Switch Staff / Login";
+        desktopLogoutBtn.style.display = "inline-flex";
+        mobileLogoutBtn.style.display = "inline-flex";
+      } else {
+        desktopBadge.classList.remove("active");
+        mobileBadge.classList.remove("active");
+        desktopLoginBtn.textContent = "Staff Login";
+        mobileLoginBtn.textContent = "Staff Login";
+        desktopLogoutBtn.style.display = "none";
+        mobileLogoutBtn.style.display = "none";
+      }
+
+      // Update lock badges on the 6 workspace cards
+      document.querySelectorAll("[data-lock-for]").forEach(badge => {
+        const cardRole = badge.getAttribute("data-lock-for");
+        if (isRoleAllowed(session, cardRole)) {
+          badge.textContent = "✓ Authorized";
+          badge.classList.add("unlocked");
+        } else {
+          badge.textContent = "🔒 Login Required";
+          badge.classList.remove("unlocked");
+        }
+      });
+    }
+
+    // Handle all 6 role-protected portal & waiting-room clicks
+    document.querySelectorAll("[data-target-role][data-target-url]").forEach(el => {
+      el.addEventListener("click", function () {
+        const requiredRole = this.getAttribute("data-target-role");
+        const targetUrl = this.getAttribute("data-target-url");
+        const session = getSession();
+
+        if (!session) {
+          openLoginModal(
+            requiredRole,
+            `Authentication required: sign in to access ${ROLE_LABELS[requiredRole]}.`,
+            targetUrl
+          );
+          return;
+        }
+
+        if (!isRoleAllowed(session, requiredRole)) {
+          openLoginModal(
+            requiredRole,
+            `Access restricted: your current session is ${ROLE_LABELS[session.role]}, which cannot open ${ROLE_LABELS[requiredRole]}. Sign in with the ${ROLE_LABELS[requiredRole]} or Admin role.`,
+            targetUrl
+          );
+          return;
+        }
+
+        window.location.href = targetUrl;
+      });
+    });
+
+    // Quick preset chips inside floating login card
+    document.querySelectorAll(".preset-chip").forEach(chip => {
+      chip.addEventListener("click", function () {
+        const [role, name, code] = this.getAttribute("data-preset").split("|");
+        loginRoleSelect.value = role;
+        staffNameInput.value = `${name} (${code})`;
+        // Clear any previous card redirect so the newly clicked preset role is respected
+        pendingRedirectUrl = null;
+      });
+    });
+
+    // Also clear stale pendingRedirectUrl if the user manually changes the role dropdown
+    loginRoleSelect.addEventListener("change", function () {
+      pendingRedirectUrl = null;
+    });
+
+    // Submit floating login form
+    staffLoginForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+      const role = loginRoleSelect.value;
+      const staffName = staffNameInput.value.trim() || "Staff Member";
+
+      const newSession = {
+        role: role,
+        staffName: staffName,
+        loggedInAt: new Date().toISOString()
+      };
+      saveSession(newSession);
+
+      // Always go to the workspace matching the role selected in the form
+      const destination = ROLE_ROUTES[role];
+      closeLoginModal();
+      window.location.href = destination;
+    });
+
+    // Clicking Staff Login / Switch Staff always opens the modal so you can choose any role
+    function handlePrimaryStaffButton() {
+      const session = getSession();
+      openLoginModal(session && session.role ? session.role : "reception", null, null);
+    }
+
+    document.getElementById("desktopLoginBtn").addEventListener("click", handlePrimaryStaffButton);
+    document.getElementById("mobileLoginBtn").addEventListener("click", handlePrimaryStaffButton);
+    document.getElementById("heroStaffBtn").addEventListener("click", handlePrimaryStaffButton);
+
+    document.getElementById("desktopLogoutBtn").addEventListener("click", clearSession);
+    document.getElementById("mobileLogoutBtn").addEventListener("click", function () {
+      clearSession();
+      closeDrawer();
+    });
+
+    closeLoginModalBtn.addEventListener("click", closeLoginModal);
+    loginModalBackdrop.addEventListener("click", function (event) {
+      if (event.target === loginModalBackdrop) {
+        closeLoginModal();
+      }
+    });
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") {
+        closeLoginModal();
+        closeDrawer();
+      }
+    });
+
+    // Check if redirected from a protected page (?auth_required=role)
+    const params = new URLSearchParams(window.location.search);
+    const requiredFromRedirect = params.get("auth_required");
+    if (requiredFromRedirect && ROLE_ROUTES[requiredFromRedirect]) {
+      openLoginModal(
+        requiredFromRedirect,
+        `Session required: please sign in to open ${ROLE_LABELS[requiredFromRedirect]}.`,
+        ROLE_ROUTES[requiredFromRedirect]
+      );
+      window.history.replaceState({}, document.title, "index.html");
+    }
+
+    // Initialize session state on load
+    syncSessionUI();
+</script>
+  
+  
+</body>
+</html>
